@@ -1,4 +1,4 @@
-const PIE_COLORS = ['#1b6b4a', '#2d8f6f', '#c9a227', '#3d6ea8', '#c45c26', '#6b4c9a', '#4a9bb5', '#8b3a4a'];
+const PIE_COLORS = ['#1E2A78', '#3ED6E5', '#A68CF0', '#8B93B0', '#A8B0C8', '#C5CAD8', '#6B7194', '#4A5280'];
 
 export function esc(str) {
   return String(str ?? '')

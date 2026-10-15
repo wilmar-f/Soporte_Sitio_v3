@@ -1,7 +1,7 @@
 /* ── Página de Login ──────────────────────────────── */
 
 body.login-page {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background: linear-gradient(135deg, #865FE9 0%, #3ED6E5 100%);
   min-height: 100vh;
 }
 
@@ -71,6 +71,25 @@ body.login-page footer {
   margin-top: 6px;
   padding: 13px;
   font-size: 15px;
+}
+
+body.login-page .btn--primario {
+  background: var(--color-action);
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(1, 8, 71, 0.15);
+}
+body.login-page .btn--primario:hover {
+  background: var(--color-action-hover);
+}
+
+body.login-page .campo input {
+  background: #F3EEFF;
+  border-color: #D8CFF5;
+  color: #010847;
+}
+body.login-page .campo input:focus {
+  border-color: #865FE9;
+  box-shadow: 0 0 0 3px rgba(134, 95, 233, 0.25);
 }
 
 .login-form .btn:disabled {

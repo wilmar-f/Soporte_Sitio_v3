@@ -65,6 +65,7 @@ function renderInfoUsuario() {
 
   const esAdmin = esRolAdministrador(usuarioActual.rol);
   setSidebarBtnVisible(document.getElementById('btn-usuarios'), esAdmin);
+  setSidebarBtnVisible(document.getElementById('btn-reportes'), esAdmin);
 }
 
 function setSidebarBtnVisible(btn, visible) {
@@ -297,6 +298,7 @@ function registrarEventos() {
     irAPanelUsuario('diagnostico-beta');
   });
   document.getElementById('btn-usuarios')?.addEventListener('click', () => irAPanelUsuario('usuarios'));
+  document.getElementById('btn-reportes')?.addEventListener('click', () => irAPanelUsuario('reportes'));
   document.getElementById('btn-cerrar-sesion').addEventListener('click', cerrarSesion);
 
   document.getElementById('sede').addEventListener('change', e => {

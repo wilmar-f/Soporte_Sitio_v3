@@ -7,6 +7,7 @@ Thumbs.db
 
 # Historial local (Linux / DATA_DIR); no versionar
 backend/data/diagnosticos.json
+backend/data/actas.json
 backend/data/videoconferencia-log.json
 
 # Documentación e informes locales (no requeridos por la app)

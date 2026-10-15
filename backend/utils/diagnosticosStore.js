@@ -91,12 +91,21 @@ function filterDiagnosticos({
   flujo = '',
 } = {}) {
   const all = readAll();
-  const flujoNorm = String(flujo || '').trim().toLowerCase();
+  const flujos = new Set(
+    String(flujo || '')
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean)
+  );
+  const quiereClasico = flujos.has('clasico');
+  const quiereIa = flujos.has('ia');
   let items = all;
-  if (flujoNorm === 'ia') {
-    items = items.filter(row => String(row.tipoDiagnostico ?? '').toUpperCase() === 'BETA');
-  } else if (flujoNorm === 'clasico') {
-    items = items.filter(row => String(row.tipoDiagnostico ?? '').toUpperCase() !== 'BETA');
+  if (quiereClasico && !quiereIa) {
+    items = items.filter((row) => String(row.tipoDiagnostico ?? '').toUpperCase() !== 'BETA');
+  } else if (quiereIa && !quiereClasico) {
+    items = items.filter((row) => String(row.tipoDiagnostico ?? '').toUpperCase() === 'BETA');
+  } else if (!quiereClasico && !quiereIa && flujos.size) {
+    items = [];
   }
 
   const query = String(q).trim().toLowerCase();
@@ -133,11 +142,13 @@ function filterDiagnosticos({
   const porTecnico = countBy(items, r => r.nombreTecnico || r.cedulaTecnico);
   const porMes = countByMes(items, r => mesBogota(r.fecha || r.createdAt));
 
-  const universe = flujoNorm === 'ia'
-    ? all.filter(row => String(row.tipoDiagnostico ?? '').toUpperCase() === 'BETA')
-    : flujoNorm === 'clasico'
-      ? all.filter(row => String(row.tipoDiagnostico ?? '').toUpperCase() !== 'BETA')
-      : all;
+  const universe = (quiereClasico && quiereIa) || !flujos.size
+    ? all
+    : quiereIa
+      ? all.filter((row) => String(row.tipoDiagnostico ?? '').toUpperCase() === 'BETA')
+      : quiereClasico
+        ? all.filter((row) => String(row.tipoDiagnostico ?? '').toUpperCase() !== 'BETA')
+        : [];
 
   const sedes = [...new Set(universe.map(r => labelUn(r)).filter(Boolean))]
     .sort((a, b) => String(a).localeCompare(String(b), 'es'));

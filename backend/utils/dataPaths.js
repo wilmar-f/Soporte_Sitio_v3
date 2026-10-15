@@ -64,6 +64,11 @@ function bootstrapDataFiles() {
   if (!fs.existsSync(targetVcLog)) {
     fs.writeFileSync(targetVcLog, '[]', 'utf8');
   }
+
+  const targetActas = path.join(dataDir, 'actas.json');
+  if (!fs.existsSync(targetActas)) {
+    fs.writeFileSync(targetActas, '[]', 'utf8');
+  }
 }
 
 module.exports = {

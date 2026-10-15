@@ -1,7 +1,8 @@
 const { generarPdfActa } = require('../services/pdfService');
 const { getActasPersonas, findPersonaPorCedula } = require('../utils/readActasPersonas');
+const { appendActa } = require('../utils/actasStore');
 
-const RE_ACTA = /^[A-Za-z0-9\-*]{2,10}$/;
+const RE_ACTA = /^\d{4}-\d{6}$/;
 const TIPOS_NOVEDAD = [
   'CALIDAD PRESTAMO',
   'INGRESO DE ALTA',
@@ -53,20 +54,33 @@ exports.getActasPersonas = (req, res) => {
 exports.generarPdfActa = async (req, res) => {
   try {
     const body = req.body || {};
-    const numeroActa = txt(body.numeroActa);
     const tipoNovedad = txt(body.tipoNovedad);
     const fechaNovedad = txt(body.fechaNovedad);
     const activos = Array.isArray(body.activos) ? body.activos.filter(activoOk) : [];
 
     const tipoNorm = tipoNovedad.toUpperCase();
-    if (!tipoNovedad || !TIPOS_NOVEDAD_NORM.has(normTipo(tipoNovedad)) || !fechaNovedad || !RE_ACTA.test(numeroActa)) {
-      return res.status(400).json({ error: 'Completa fecha, un tipo de novedad válido y un Nº de acta (2 a 10 caracteres).' });
+    if (!tipoNovedad || !TIPOS_NOVEDAD_NORM.has(normTipo(tipoNovedad)) || !fechaNovedad) {
+      return res.status(400).json({ error: 'Completa fecha y un tipo de novedad válido.' });
     }
     if (!personaOk(body.entregado) || !personaOk(body.recibido)) {
       return res.status(400).json({ error: 'Completa los datos obligatorios de quien entrega y quien recibe.' });
     }
     if (!activos.length) {
       return res.status(400).json({ error: 'Debe haber al menos un activo con tipo, marca, modelo, serie y etiqueta.' });
+    }
+
+    const guardada = appendActa({
+      fechaNovedad,
+      tipoNovedad: tipoNorm,
+      nombreTecnico: txt(body.nombreTecnico) || txt(req.user?.nombreCompleto),
+      cedulaTecnico: txt(req.user?.cedula),
+      entregado: body.entregado,
+      recibido: body.recibido,
+      activos,
+    });
+    const numeroActa = guardada.numeroActa;
+    if (!RE_ACTA.test(numeroActa)) {
+      return res.status(500).json({ error: 'No se pudo asignar el Nº de acta interno.' });
     }
 
     const datos = {
