@@ -9,11 +9,13 @@
   <link rel="stylesheet" href="conferencia.module.css">
 </head>
 <body>
-  <header id="banner"></header>
   <div id="toast-container"></div>
 
   <main class="app-layout">
     <aside class="sidebar" id="sidebar">
+      <div class="sidebar__marca">
+        <img class="sidebar__logo" src="../assets/logo/Logo-Teknologia.jpg" alt="">
+      </div>
       <div class="sidebar__perfil">
         <div class="sidebar__avatar" id="user-avatar" aria-hidden="true"></div>
         <p class="sidebar__bienvenida">Bienvenido,</p>
@@ -53,7 +55,7 @@
 
     <section class="panel-principal">
       <form class="formulario-diagnostico form-conferencia" id="form-conferencia" novalidate>
-        <h2>VideoConferencia</h2>
+        <h2><span class="titulo-oscuro">Video</span><span class="titulo-claro">Conferencia</span></h2>
         <p class="conferencia-ayuda">Selecciona sede y sala</p>
         <p class="conferencia-estado" id="onedrive-estado" hidden></p>
 

@@ -4,27 +4,40 @@
    ============================================================ */
 
 :root {
-  --color-primario:    #1E3A8A;
-  --color-primario-dark: #162d6b;
-  --color-primario-light: #2d4fa3;
-  --color-exito:       #188E16;
-  --color-info:        #00878C;
-  --color-advertencia: #A86105;
-  --color-peligro:     #fd202b;
+  --color-primary:          #865FE9;
+  --color-secondary:        #3ED6E5;
+  --color-text-secondary:   #010847;
+  --color-title:            #FFFFFF;
 
-  --color-texto:       #1a1a2e;
-  --color-texto-suave: #4b5563;
-  --color-fondo:       #f4f6fb;
-  --color-blanco:      #ffffff;
-  --color-gris-claro:  #e2e8f0;
-  --color-gris-medio:  #94a3b8;
-  --color-gris-borde:  #cbd5e1;
+  --color-primary-dark:     #6B46C9;
+  --color-primary-deeper:   #5B3BB5;
+  --color-primary-soft:     #F4EFFC;
+  --color-secondary-deep:   #1BB8C9;
+  --color-secondary-soft:   rgba(62, 214, 229, 0.22);
 
-  --banner-altura: 70px;
-  --border-radius: 6px;
-  --border-radius-lg: 10px;
-  --sombra:        0 2px 10px rgba(0, 0, 0, 0.10);
-  --sombra-lg:     0 4px 24px rgba(0, 0, 0, 0.14);
+  --color-primario:         var(--color-primary);
+  --color-primario-dark:    var(--color-primary-dark);
+  --color-primario-light:   var(--color-secondary);
+  --color-exito:            #188E16;
+  --color-info:             var(--color-secondary-deep);
+  --color-advertencia:      #A86105;
+  --color-peligro:          #fd202b;
+
+  --color-texto:            var(--color-text-secondary);
+  --color-texto-suave:      rgba(1, 8, 71, 0.7);
+  --color-fondo:            #F7F4FC;
+  --color-blanco:           #ffffff;
+  --color-gris-claro:       #E8E0F4;
+  --color-gris-medio:       rgba(1, 8, 71, 0.45);
+  --color-gris-borde:       #D4C8EC;
+  --color-borde:            var(--color-gris-borde);
+  --color-gris-fondo:       var(--color-primary-soft);
+
+  --banner-altura: 0px;
+  --border-radius: 12px;
+  --border-radius-lg: 24px;
+  --sombra:        0 8px 28px rgba(134, 95, 233, 0.12);
+  --sombra-lg:     0 18px 48px rgba(91, 59, 181, 0.18);
   --fuente:        'Segoe UI', system-ui, -apple-system, sans-serif;
   --transicion:    0.2s ease;
 }
@@ -47,18 +60,24 @@ button { cursor: pointer; font-family: inherit; }
 input, select, textarea { font-family: inherit; font-size: inherit; }
 ul, ol { list-style: none; }
 
-/* ── Banner ───────────────────────────────────────── */
+html {
+  scrollbar-color: var(--color-primary) var(--color-primary-soft);
+  scrollbar-width: thin;
+}
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--color-primary-soft); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-primary-dark); }
+
+.titulo-oscuro { color: var(--color-text-secondary); }
+.titulo-claro { color: var(--color-secondary-deep); }
+
+/* ── Banner (oculto; se eliminó la barra de marcas) ─ */
 #banner {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 1000;
-  height: var(--banner-altura);
-  background: var(--color-primario);
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
-  gap: 0;
+  display: none;
 }
 
 .banner__logos {
@@ -95,8 +114,7 @@ ul, ol { list-style: none; }
   flex-shrink: 0;
 }
 
-/* ── Offsets por banner fijo ──────────────────────── */
-main { margin-top: var(--banner-altura); flex: 1; }
+main { margin-top: 0; flex: 1; }
 
 /* ── Toast / Alertas ─────────────────────────────── */
 #toast-container {
@@ -166,32 +184,32 @@ main { margin-top: var(--banner-altura); flex: 1; }
   display: block;
   font-size: 12.5px;
   font-weight: 600;
-  color: var(--color-texto-suave);
+  color: var(--color-text-secondary);
   margin-bottom: 4px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 .campo input,
 .campo select,
 .campo textarea {
   width: 100%;
-  padding: 8px 11px;
+  padding: 10px 12px;
   border: 1.5px solid var(--color-gris-borde);
   border-radius: var(--border-radius);
-  background: var(--color-blanco);
+  background: var(--color-primary-soft);
   color: var(--color-texto);
-  transition: border-color var(--transicion), box-shadow var(--transicion);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   outline: none;
 }
 .campo input:focus,
 .campo select:focus,
 .campo textarea:focus {
-  border-color: var(--color-primario);
-  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px var(--color-secondary-soft);
 }
 .campo input[readonly],
 .campo input[readonly]:focus {
-  background: #f0f4ff;
+  background: #F0EAFB;
   border-color: var(--color-gris-claro);
   box-shadow: none;
   cursor: default;
@@ -219,26 +237,32 @@ main { margin-top: var(--banner-altura); flex: 1; }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 9px 22px;
+  padding: 10px 22px;
   border: none;
   border-radius: var(--border-radius);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.02em;
-  transition: opacity var(--transicion), transform var(--transicion), background var(--transicion);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, background 0.2s ease, color 0.2s ease;
   white-space: nowrap;
 }
-.btn:hover   { opacity: 0.88; }
-.btn:active  { transform: scale(0.97); }
-.btn--primario  { background: var(--color-primario);  color: var(--color-blanco); }
+.btn:hover   { filter: brightness(1.06); transform: translateY(-1px); }
+.btn:active  { transform: translateY(0) scale(0.98); }
+.btn:focus-visible { outline: 2px solid var(--color-secondary); outline-offset: 2px; }
+.btn--primario  {
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%);
+  color: var(--color-title);
+  box-shadow: 0 8px 20px rgba(134, 95, 233, 0.28);
+}
+.btn--primario:hover { box-shadow: 0 12px 26px rgba(134, 95, 233, 0.38); }
 .btn--peligro   { background: var(--color-peligro);   color: var(--color-blanco); }
 .btn--exito     { background: var(--color-exito);     color: var(--color-blanco); }
 .btn--outline   {
-  background: transparent;
-  color: var(--color-primario);
-  border: 1.5px solid var(--color-primario);
+  background: var(--color-blanco);
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
 }
-.btn--outline:hover { background: var(--color-primario); color: var(--color-blanco); opacity: 1; }
+.btn--outline:hover { background: var(--color-primary-soft); color: var(--color-primary-dark); filter: none; }
 .btn--full { width: 100%; }
 
 /* ── Secciones de formulario ──────────────────────── */
@@ -408,7 +432,7 @@ fieldset.seccion legend {
   margin-bottom: 6px;
 }
 .diagnostico-preview {
-  background: #F3F4F6;
+  background: var(--color-primary-soft);
   border: 1px solid var(--color-gris-borde);
   border-radius: var(--border-radius);
   padding: 12px 14px;
@@ -485,10 +509,4 @@ footer {
   .campos-grid { grid-template-columns: 1fr; }
   #toast-container { left: 12px; right: 12px; bottom: 12px; }
   .toast { min-width: unset; }
-  .banner__logos { gap: 3px; padding: 6px 0; }
-  .banner__logo { height: 38px; width: 72px; max-width: 72px; }
-  .banner__logo-placeholder { width: 72px; height: 38px; font-size: 9px; }
-}
-@media (max-width: 900px) and (min-width: 641px) {
-  .banner__logos { gap: 8px; }
 }

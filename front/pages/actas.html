@@ -9,11 +9,13 @@
   <link rel="stylesheet" href="actas.module.css">
 </head>
 <body>
-  <header id="banner"></header>
   <div id="toast-container"></div>
 
   <main class="app-layout">
     <aside class="sidebar" id="sidebar">
+      <div class="sidebar__marca">
+        <img class="sidebar__logo" src="../assets/logo/Logo-Teknologia.jpg" alt="">
+      </div>
       <div class="sidebar__perfil">
         <div class="sidebar__avatar" id="user-avatar" aria-hidden="true"></div>
         <p class="sidebar__bienvenida">Bienvenido,</p>
@@ -54,7 +56,7 @@
     <section class="panel-principal" id="panel-principal" aria-live="polite">
       <div class="panel-bienvenida" id="panel-bienvenida">
         <div class="panel-bienvenida__icono">📄</div>
-        <h2>Actas de novedades</h2>
+        <h2><span class="titulo-oscuro">Actas</span><span class="titulo-claro"> de novedades</span></h2>
         <p>Haz clic en <strong>Actas</strong> en el menú lateral para abrir el formulario.</p>
       </div>
     </section>
