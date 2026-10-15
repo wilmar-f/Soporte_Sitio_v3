@@ -80,7 +80,7 @@ function appendDiagnostico(record) {
   return entry;
 }
 
-function listDiagnosticos({
+function filterDiagnosticos({
   q = '',
   anio = '',
   tipo = '',
@@ -88,11 +88,16 @@ function listDiagnosticos({
   hasta = '',
   sede = '',
   tecnico = '',
-  page = 1,
-  limit = 10,
+  flujo = '',
 } = {}) {
   const all = readAll();
+  const flujoNorm = String(flujo || '').trim().toLowerCase();
   let items = all;
+  if (flujoNorm === 'ia') {
+    items = items.filter(row => String(row.tipoDiagnostico ?? '').toUpperCase() === 'BETA');
+  } else if (flujoNorm === 'clasico') {
+    items = items.filter(row => String(row.tipoDiagnostico ?? '').toUpperCase() !== 'BETA');
+  }
 
   const query = String(q).trim().toLowerCase();
   if (query) {
@@ -128,14 +133,20 @@ function listDiagnosticos({
   const porTecnico = countBy(items, r => r.nombreTecnico || r.cedulaTecnico);
   const porMes = countByMes(items, r => mesBogota(r.fecha || r.createdAt));
 
-  const sedes = [...new Set(all.map(r => labelUn(r)).filter(Boolean))]
+  const universe = flujoNorm === 'ia'
+    ? all.filter(row => String(row.tipoDiagnostico ?? '').toUpperCase() === 'BETA')
+    : flujoNorm === 'clasico'
+      ? all.filter(row => String(row.tipoDiagnostico ?? '').toUpperCase() !== 'BETA')
+      : all;
+
+  const sedes = [...new Set(universe.map(r => labelUn(r)).filter(Boolean))]
     .sort((a, b) => String(a).localeCompare(String(b), 'es'));
 
   return {
-    ...paginate(items, page, limit),
+    items,
     filtros: {
       sedes,
-      tecnicos: collectTecnicos(all),
+      tecnicos: collectTecnicos(universe),
     },
     agregados: {
       kpis: {
@@ -152,6 +163,26 @@ function listDiagnosticos({
   };
 }
 
+function listDiagnosticos({
+  q = '',
+  anio = '',
+  tipo = '',
+  desde = '',
+  hasta = '',
+  sede = '',
+  tecnico = '',
+  flujo = '',
+  page = 1,
+  limit = 10,
+} = {}) {
+  const filtered = filterDiagnosticos({ q, anio, tipo, desde, hasta, sede, tecnico, flujo });
+  return {
+    ...paginate(filtered.items, page, limit),
+    filtros: filtered.filtros,
+    agregados: filtered.agregados,
+  };
+}
+
 function getAniosDisponibles() {
   const years = new Set();
   for (const row of readAll()) {
@@ -164,6 +195,7 @@ function getAniosDisponibles() {
 module.exports = {
   appendDiagnostico,
   listDiagnosticos,
+  filterDiagnosticos,
   getAniosDisponibles,
   readAll,
 };

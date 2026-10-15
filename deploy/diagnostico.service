@@ -1,0 +1,15 @@
+[Unit]
+Description=Diagnostico soporte en sitio
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/intranet/soporte/backend
+EnvironmentFile=/var/www/intranet/soporte/.env
+ExecStart=/usr/bin/node /var/www/intranet/soporte/backend/server.js
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

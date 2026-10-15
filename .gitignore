@@ -5,6 +5,10 @@ node_modules/
 .DS_Store
 Thumbs.db
 
+# Historial local (Linux / DATA_DIR); no versionar
+backend/data/diagnosticos.json
+backend/data/videoconferencia-log.json
+
 # Documentación e informes locales (no requeridos por la app)
 docs/
 

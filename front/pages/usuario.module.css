@@ -460,10 +460,16 @@
   align-items: flex-end;
   gap: 12px;
 }
-.admin-usuarios-acciones {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+.admin-db-status {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.admin-db-status--ok { color: #157a3a; }
+.admin-db-status--bad { color: #c1121f; }
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 .modal-clave__dialog select {
   width: 100%;
@@ -489,6 +495,27 @@
   justify-content: flex-end;
   gap: 10px;
   margin-top: 8px;
+}
+
+.reportes-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 4px 0 8px;
+}
+.reportes-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--color-borde, #c8d4e8);
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-texto-suave, #5a6a8a);
+}
+.reportes-tab--activo {
+  background: var(--color-primario, #1e3a5f);
+  border-color: var(--color-primario, #1e3a5f);
+  color: #fff;
 }
 
 /* ── Dashboard estadísticas ───────────────────────── */

@@ -9,11 +9,13 @@
     "validate:inventario": "node scripts/validate-inventario.js",
     "validate:usuarios": "node scripts/validate-usuarios.js",
     "onedrive:auth": "node scripts/onedrive-auth.js",
+    "migrate:tecnicos": "node scripts/migrate-tecnicos-pg.js",
     "generate:informe": "node scripts/generar-informe-pdf.js"
   },
   "dependencies": {
     "@google/genai": "^2.22.0",
     "@sparticuz/chromium": "^133.0.0",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "csv-parser": "^3.0.0",
     "dotenv": "^16.4.5",
@@ -21,6 +23,7 @@
     "handlebars": "^4.7.9",
     "jsonwebtoken": "^9.0.2",
     "pdf-lib": "^1.17.1",
+    "pg": "^8.23.0",
     "puppeteer-core": "^25.4.0",
     "xlsx": "^0.18.5"
   },

@@ -30,6 +30,7 @@ let state = {
   hasta: '',
   sede: '',
   tecnico: '',
+  flujo: 'clasico',
   page: 1,
   token: '',
 };
@@ -54,7 +55,6 @@ function buildTipoOptions(selected) {
     { value: 'GESTOR_GARANTIAS', label: 'DIAGNOSTICO CON GESTOR GARANTIAS' },
     { value: 'RENOVACION', label: 'DIAGNOSTICO RENOVACION' },
     { value: 'DAAS', label: 'DAAS' },
-    { value: 'BETA', label: 'DIAGNOSTICO BETA' },
   ];
   return opts.map(o =>
     `<option value="${o.value}" ${selected === o.value ? 'selected' : ''}>${o.label}</option>`
@@ -156,6 +156,7 @@ async function fetchDiagnosticos() {
   if (state.hasta) params.set('hasta', state.hasta);
   if (state.sede) params.set('sede', state.sede);
   if (state.tecnico) params.set('tecnico', state.tecnico);
+  if (state.flujo) params.set('flujo', state.flujo);
 
   const res = await fetch(`/api/diagnosticos?${params}`, {
     headers: { Authorization: `Bearer ${state.token}` },
@@ -171,7 +172,7 @@ async function fetchDiagnosticos() {
 
 function panelSigueNoticias() {
   const panel = document.getElementById('panel-principal');
-  return panel && panel.dataset.panelActivo === 'noticias';
+  return panel && panel.dataset.panelActivo === 'reportes';
 }
 
 async function loadAndRender() {
@@ -227,6 +228,27 @@ function bindPanelEvents() {
   });
 
   panel.addEventListener('click', (e) => {
+    const tab = e.target.closest('[data-flujo]');
+    if (tab) {
+      const flujo = tab.dataset.flujo;
+      if (flujo === state.flujo) return;
+      state.flujo = flujo;
+      state.tipo = '';
+      state.page = 1;
+      panel.querySelectorAll('[data-flujo]').forEach((b) => {
+        b.classList.toggle('reportes-tab--activo', b.dataset.flujo === flujo);
+      });
+      const tipoWrap = document.getElementById('noticias-filtro-tipo-wrap');
+      if (tipoWrap) tipoWrap.hidden = flujo === 'ia';
+      const tipoSel = document.getElementById('noticias-filtro-tipo');
+      if (tipoSel) tipoSel.value = '';
+      loadAndRender();
+      return;
+    }
+    if (e.target.id === 'noticias-exportar') {
+      exportarExcel();
+      return;
+    }
     const btn = e.target.closest('.noticias-page-btn');
     if (!btn || btn.disabled) return;
     const page = parseInt(btn.dataset.page, 10);
@@ -237,24 +259,64 @@ function bindPanelEvents() {
   });
 }
 
+async function exportarExcel() {
+  const params = new URLSearchParams();
+  if (state.q) params.set('q', state.q);
+  if (state.anio) params.set('anio', state.anio);
+  if (state.tipo) params.set('tipo', state.tipo);
+  if (state.desde) params.set('desde', state.desde);
+  if (state.hasta) params.set('hasta', state.hasta);
+  if (state.sede) params.set('sede', state.sede);
+  if (state.tecnico) params.set('tecnico', state.tecnico);
+  if (state.flujo) params.set('flujo', state.flujo);
+  try {
+    const res = await fetch(`/api/diagnosticos/export?${params}`, {
+      headers: { Authorization: `Bearer ${state.token}` },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Error ${res.status}`);
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = state.flujo === 'ia' ? 'reportes-diagnostico-ia.xlsx' : 'reportes-diagnosticos.xlsx';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('Excel descargado.', 'exito');
+  } catch (err) {
+    toast(err.message || 'No se pudo exportar.', 'error');
+  }
+}
+
 export async function renderPanelNoticias(token) {
   state = {
-    q: '', anio: '', tipo: '', desde: '', hasta: '', sede: '', tecnico: '', page: 1, token: token || '',
+    q: '', anio: '', tipo: '', desde: '', hasta: '', sede: '', tecnico: '',
+    flujo: 'clasico', page: 1, token: token || '',
   };
 
   const panel = document.getElementById('panel-principal');
-  panel.dataset.panelActivo = 'noticias';
+  panel.dataset.panelActivo = 'reportes';
   panel.innerHTML = `
     <div class="noticias-panel dash-panel">
       <div class="noticias-header">
         <div>
-          <h2 class="noticias-titulo">Dashboard Diagnósticos</h2>
-          <p class="noticias-subtitulo">Historial y gráficos (solo administrador)</p>
+          <h2 class="noticias-titulo">Reportes</h2>
+          <p class="noticias-subtitulo">Estadísticas de diagnósticos (solo administrador)</p>
         </div>
-        <div class="noticias-busqueda-wrap">
-          <label for="noticias-busqueda" class="noticias-busqueda-label">Buscar por serial o placa</label>
-          <input type="search" id="noticias-busqueda" class="noticias-busqueda" placeholder="Serial o etiqueta…" autocomplete="off">
+        <div class="noticias-busqueda-wrap admin-usuarios-toolbar">
+          <div>
+            <label for="noticias-busqueda" class="noticias-busqueda-label">Buscar por serial o placa</label>
+            <input type="search" id="noticias-busqueda" class="noticias-busqueda" placeholder="Serial o etiqueta…" autocomplete="off">
+          </div>
+          <button type="button" class="btn" id="noticias-exportar">Exportar Excel</button>
         </div>
+      </div>
+
+      <div class="reportes-tabs" role="tablist">
+        <button type="button" class="reportes-tab reportes-tab--activo" data-flujo="clasico">Diagnósticos</button>
+        <button type="button" class="reportes-tab" data-flujo="ia">Diagnóstico IA</button>
       </div>
 
       <div class="stats-filters">
@@ -274,7 +336,7 @@ export async function renderPanelNoticias(token) {
           Técnico
           <select id="noticias-filtro-tecnico"><option value="">Todos los técnicos</option></select>
         </label>
-        <label class="stats-filter">
+        <label class="stats-filter" id="noticias-filtro-tipo-wrap">
           Tipo
           <select id="noticias-filtro-tipo">${buildTipoOptions('')}</select>
         </label>

@@ -2,6 +2,7 @@ import { renderBanner } from './banner.js';
 import { toast } from './toast.js';
 import { formatearUltimoAcceso } from './ultimo-acceso.js';
 import { esRolAdministrador } from './noticias.js';
+import { initCambiarClave } from './cambiar-clave.js';
 import {
   resolverSesion,
   cerrar as cerrarSesionStorage,
@@ -1131,4 +1132,5 @@ function registrarSidebar() {
 renderBanner();
 renderInfoUsuario();
 registrarSidebar();
+initCambiarClave(() => tokenGuardado);
 inventarioListo = recargarInventario();

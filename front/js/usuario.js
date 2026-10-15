@@ -23,8 +23,9 @@ import {
   resetDiagnosticoInteractivo,
 } from './diagnostico-logica.js';
 import { formatearUltimoAcceso } from './ultimo-acceso.js';
-import { esRolAdministrador } from './noticias.js';
+import { esRolAdministrador, renderPanelNoticias } from './noticias.js';
 import { renderPanelUsuarios } from './admin-usuarios.js';
+import { initCambiarClave } from './cambiar-clave.js';
 
 const MAX_EVIDENCIAS = 3;
 let evidenciasAdjuntas = [];
@@ -259,6 +260,7 @@ renderBanner();
 renderInfoUsuario();
 inventarioListo = cargarDatosIniciales();
 registrarEventosSidebar();
+initCambiarClave(() => tokenGuardado);
 abrirPanelDesdeQuery();
 
 /* ── Renderiza datos del usuario en el sidebar ─────── */
@@ -304,6 +306,7 @@ function renderInfoUsuario() {
 
   const btnUsuarios = document.getElementById('btn-usuarios');
   setSidebarBtnVisible(btnUsuarios, esAdministrador());
+  setSidebarBtnVisible(document.getElementById('btn-reportes'), esAdministrador());
 }
 
 /* ── Carga datos maestros al iniciar ───────────────── */
@@ -385,6 +388,15 @@ function registrarEventosSidebar() {
     });
   }
 
+  const btnReportes = document.getElementById('btn-reportes');
+  if (btnReportes && esAdministrador()) {
+    btnReportes.addEventListener('click', () => {
+      activarBotonSidebar('btn-reportes');
+      setPanelActivo('reportes');
+      renderPanelNoticias(tokenGuardado);
+    });
+  }
+
   const btnActas = document.getElementById('btn-actas');
   if (btnActas) {
     btnActas.addEventListener('click', () => {
@@ -426,6 +438,13 @@ function abrirPanelDesdeQuery() {
     activarBotonSidebar('btn-usuarios');
     setPanelActivo('usuarios');
     renderPanelUsuarios(tokenGuardado);
+    return;
+  }
+
+  if (panel === 'reportes' && esAdministrador()) {
+    activarBotonSidebar('btn-reportes');
+    setPanelActivo('reportes');
+    renderPanelNoticias(tokenGuardado);
   }
 }
 
