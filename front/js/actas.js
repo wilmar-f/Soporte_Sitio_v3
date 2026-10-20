@@ -478,11 +478,13 @@ function renderInfoUsuario() {
   const nombre = toTitleCase(usuarioActual.nombreCompleto || '');
   document.getElementById('user-nombre').textContent = nombre || '—';
   document.getElementById('user-correo').textContent = usuarioActual.correo || usuarioActual.cedula || '—';
-  document.getElementById('user-rol').textContent = usuarioActual.rol || usuarioActual.cargo || '—';
+  document.getElementById('user-rol').textContent = toTitleCase(usuarioActual.cargo || usuarioActual.rol || '') || '—';
   const elAcceso = document.getElementById('user-ultimo-acceso');
   if (elAcceso) {
     const anterior = sessionStorage.getItem('ultimoAccesoAnterior');
-    elAcceso.textContent = formatearUltimoAcceso(anterior) || '';
+    elAcceso.textContent = anterior
+      ? `Último acceso: ${formatearUltimoAcceso(anterior)}`
+      : 'Primer ingreso en este equipo';
   }
   document.getElementById('user-avatar').textContent = (nombre || 'U').charAt(0).toUpperCase();
   document.documentElement.classList.toggle('rol-admin', esRolAdministrador(usuarioActual.rol));

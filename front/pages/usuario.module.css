@@ -86,6 +86,7 @@
   font-style: italic;
   line-height: 1.35;
   margin-bottom: 8px;
+  min-height: 2.7em;
 }
 .sidebar__rol {
   display: inline-block;

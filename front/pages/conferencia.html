@@ -24,8 +24,6 @@
         <p class="sidebar__ultimo-acceso" id="user-ultimo-acceso"></p>
         <span class="sidebar__rol" id="user-rol">—</span>
       </div>
-      <script src="../js/sidebar-rol.js"></script>
-
       <nav class="sidebar__nav" aria-label="Menú principal">
         <button type="button" class="sidebar__btn" id="btn-usuarios">
           <span class="sidebar__btn-icono">👥</span>
@@ -60,6 +58,7 @@
           Cerrar Sesión
         </button>
       </nav>
+      <script src="../js/sidebar-rol.js"></script>
     </aside>
 
     <section class="panel-principal">
@@ -128,6 +127,17 @@
     <p>&copy; 2026 Sistema de Diagnóstico Web - Soporte en Sitio — Todos los derechos reservados</p>
   </footer>
 
+  <script>
+    window.addEventListener('error', function (e) {
+      // #region agent log
+      fetch('http://127.0.0.1:7357/ingest/5bf9ea90-df63-4241-b696-03a74523a433',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'31c3e1'},body:JSON.stringify({sessionId:'31c3e1',runId:'linux-freeze',hypothesisId:'A',location:'conferencia.html:error',message:'window error',data:{err:String(e.message||''),file:String(e.filename||''),line:e.lineno||0,host:location.host},timestamp:Date.now()})}).catch(function(){});
+      // #endregion
+    });
+    window.addEventListener('unhandledrejection', function (e) {
+      // #region agent log
+      fetch('http://127.0.0.1:7357/ingest/5bf9ea90-df63-4241-b696-03a74523a433',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'31c3e1'},body:JSON.stringify({sessionId:'31c3e1',runId:'linux-freeze',hypothesisId:'A',location:'conferencia.html:unhandledrejection',message:'promise reject',data:{err:String(e.reason&&e.reason.message||e.reason||''),host:location.host},timestamp:Date.now()})}).catch(function(){});
+      // #endregion
+    });
+  </script>
   <script type="module" src="../js/conferencia.js"></script>
-</body>
 </html>

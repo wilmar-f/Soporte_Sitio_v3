@@ -10,7 +10,13 @@ import {
   iniciarVigilanciaInactividad,
 } from './sesion.js';
 
+// #region agent log
+fetch('http://127.0.0.1:7357/ingest/5bf9ea90-df63-4241-b696-03a74523a433',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'31c3e1'},body:JSON.stringify({sessionId:'31c3e1',runId:'linux-freeze',hypothesisId:'A',location:'conferencia.js:top',message:'modulo inicio',data:{host:location.host},timestamp:Date.now()})}).catch(()=>{});
+// #endregion
 const { token: tokenGuardado, usuario: usuarioGuardado } = await resolverSesion();
+// #region agent log
+fetch('http://127.0.0.1:7357/ingest/5bf9ea90-df63-4241-b696-03a74523a433',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'31c3e1'},body:JSON.stringify({sessionId:'31c3e1',runId:'linux-freeze',hypothesisId:'D',location:'conferencia.js:sesion',message:'sesion resuelta',data:{host:location.host,hasToken:!!tokenGuardado,hasUser:!!usuarioGuardado},timestamp:Date.now()})}).catch(()=>{});
+// #endregion
 
 const sesionValida = Boolean(tokenGuardado && usuarioGuardado);
 
@@ -21,7 +27,9 @@ if (!sesionValida) {
   iniciarVigilanciaInactividad();
 }
 
-const usuarioActual = { ...JSON.parse(usuarioGuardado), loginType: 'admin' };
+const usuarioActual = usuarioGuardado
+  ? { ...JSON.parse(usuarioGuardado), loginType: 'admin' }
+  : { loginType: 'admin' };
 
 let catalogo = [];
 let imagenBase64 = '';
@@ -52,19 +60,21 @@ function renderInfoUsuario() {
   const nombre = toTitleCase(usuarioActual.nombreCompleto || '');
   document.getElementById('user-nombre').textContent = nombre || '—';
   document.getElementById('user-correo').textContent = usuarioActual.correo || usuarioActual.cedula || '—';
-  document.getElementById('user-rol').textContent = usuarioActual.rol || usuarioActual.cargo || '—';
+  document.getElementById('user-rol').textContent = toTitleCase(usuarioActual.cargo || usuarioActual.rol || '') || '—';
 
   const elAcceso = document.getElementById('user-ultimo-acceso');
   if (elAcceso) {
     const anterior = sessionStorage.getItem('ultimoAccesoAnterior');
-    elAcceso.textContent = formatearUltimoAcceso(anterior) || '';
+    elAcceso.textContent = anterior
+      ? `Último acceso: ${formatearUltimoAcceso(anterior)}`
+      : 'Primer ingreso en este equipo';
   }
 
   const avatarEl = document.getElementById('user-avatar');
   avatarEl.textContent = (nombre || 'U').charAt(0).toUpperCase();
 
   document.documentElement.classList.toggle('rol-admin', esRolAdministrador(usuarioActual.rol));
-
+}
 
 function setSidebarBtnVisible(btn, visible) {
   if (!btn) return;
@@ -286,7 +296,7 @@ function cerrarSesion() {
 }
 
 function registrarEventos() {
-  document.getElementById('btn-diagnostico').addEventListener('click', () => {
+  document.getElementById('btn-diagnostico')?.addEventListener('click', () => {
     window.location.href = '/pages/usuario.html?panel=diagnostico';
   });
   document.getElementById('btn-actas')?.addEventListener('click', () => {
@@ -297,7 +307,10 @@ function registrarEventos() {
   });
   document.getElementById('btn-usuarios')?.addEventListener('click', () => irAPanelUsuario('usuarios'));
   document.getElementById('btn-reportes')?.addEventListener('click', () => irAPanelUsuario('reportes'));
-  document.getElementById('btn-cerrar-sesion').addEventListener('click', cerrarSesion);
+  document.getElementById('btn-videoconferencia')?.addEventListener('click', () => {
+    window.location.href = '/pages/conferencia.html';
+  });
+  document.getElementById('btn-cerrar-sesion')?.addEventListener('click', cerrarSesion);
 
   document.getElementById('sede').addEventListener('change', e => {
     llenarSalas(e.target.value);
@@ -341,8 +354,20 @@ function registrarEventos() {
   window.addEventListener('pagehide', detenerWebcam);
 }
 
-renderBanner();
-renderInfoUsuario();
-registrarEventos();
-initCambiarClave(() => tokenGuardado);
-cargarCatalogo();
+try {
+  renderBanner();
+  renderInfoUsuario();
+  registrarEventos();
+  initCambiarClave(() => tokenGuardado);
+  const modal = document.getElementById('modal-reemplazar');
+  const cs = modal ? getComputedStyle(modal) : null;
+  // #region agent log
+  fetch('http://127.0.0.1:7357/ingest/5bf9ea90-df63-4241-b696-03a74523a433',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'31c3e1'},body:JSON.stringify({sessionId:'31c3e1',runId:'linux-freeze',hypothesisId:'B',location:'conferencia.js:init',message:'init ok',data:{host:location.host,modalDisplay:cs?cs.display:'no-modal',modalHidden:modal?modal.hidden:null,claveBtn:!!document.getElementById('btn-cambiar-clave')},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
+  cargarCatalogo();
+} catch (err) {
+  // #region agent log
+  fetch('http://127.0.0.1:7357/ingest/5bf9ea90-df63-4241-b696-03a74523a433',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'31c3e1'},body:JSON.stringify({sessionId:'31c3e1',runId:'linux-freeze',hypothesisId:'C',location:'conferencia.js:init',message:'init throw',data:{host:location.host,err:String(err&&err.message||err)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
+  throw err;
+}
