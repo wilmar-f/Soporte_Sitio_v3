@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const puppeteer = require('puppeteer-core');
 const { PDFDocument } = require('pdf-lib');
 const { renderDiagnosticoHtml } = require('../utils/renderDiagnostico');
@@ -47,6 +49,25 @@ function isProductionEnv() {
   return process.env.NODE_ENV === 'production' || Boolean(process.env.RENDER);
 }
 
+function findLocalChrome() {
+  const fromEnv = process.env.PUPPETEER_EXECUTABLE_PATH || process.env.CHROME_PATH;
+  const candidates = [
+    fromEnv,
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    process.env.LOCALAPPDATA
+      ? path.join(process.env.LOCALAPPDATA, 'Google', 'Chrome', 'Application', 'chrome.exe')
+      : '',
+    'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
+    'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+  ].filter(Boolean);
+  return candidates.find((p) => fs.existsSync(p)) || '';
+}
+
 async function launchBrowser() {
   if (isProductionEnv()) {
     const chromium = require('@sparticuz/chromium');
@@ -60,9 +81,25 @@ async function launchBrowser() {
     });
   }
 
-  const puppeteerFull = require('puppeteer');
-  return puppeteerFull.launch({
+  try {
+    const puppeteerFull = require('puppeteer');
+    return puppeteerFull.launch({
+      headless: true,
+      args: LAUNCH_ARGS,
+    });
+  } catch (err) {
+    if (err.code !== 'MODULE_NOT_FOUND') throw err;
+  }
+
+  const executablePath = findLocalChrome();
+  if (!executablePath) {
+    throw new Error(
+      'No se encontró Chrome/Edge para generar el PDF. Instala Google Chrome o define PUPPETEER_EXECUTABLE_PATH.'
+    );
+  }
+  return puppeteer.launch({
     headless: true,
+    executablePath,
     args: LAUNCH_ARGS,
   });
 }

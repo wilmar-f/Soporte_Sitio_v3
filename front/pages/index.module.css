@@ -73,13 +73,28 @@ body.login-page footer {
   font-size: 15px;
 }
 
-body.login-page .btn--primario {
-  background: var(--color-action);
+body.login-page .login-submit-btn {
+  width: 100%;
+  height: 3rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.75rem;
+  background-color: #0A157A;
   color: #FFFFFF;
-  box-shadow: 0 2px 6px rgba(1, 8, 71, 0.15);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
+  transform: none;
+  outline: none;
 }
-body.login-page .btn--primario:hover {
-  background: var(--color-action-hover);
+body.login-page .login-submit-btn:hover {
+  background-color: rgba(10, 21, 122, 0.9);
+  transform: none;
 }
 
 body.login-page .campo input {

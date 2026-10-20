@@ -23,7 +23,6 @@ if (!sesionValida) {
 const usuarioActual = usuarioGuardado ? { ...JSON.parse(usuarioGuardado) } : {};
 
 const MAX_EVIDENCIAS = 3;
-const RE_ACTA = /^\d{4}-\d{6}$/;
 const TIPOS_NOVEDAD = [
   'CALIDAD PRESTAMO',
   'INGRESO DE ALTA',
@@ -486,9 +485,7 @@ function renderInfoUsuario() {
     elAcceso.textContent = formatearUltimoAcceso(anterior) || '';
   }
   document.getElementById('user-avatar').textContent = (nombre || 'U').charAt(0).toUpperCase();
-  const esAdmin = esRolAdministrador(usuarioActual.rol);
-  setSidebarBtnVisible(document.getElementById('btn-usuarios'), esAdmin);
-  setSidebarBtnVisible(document.getElementById('btn-reportes'), esAdmin);
+  document.documentElement.classList.toggle('rol-admin', esRolAdministrador(usuarioActual.rol));
 }
 
 function mostrarBienvenida() {
@@ -525,8 +522,8 @@ function renderFormularioActas() {
             <input type="date" id="fecha-novedad" value="${hoyISO()}" readonly required>
           </div>
           <div class="campo">
-            <label for="numero-acta">Nº acta interno *</label>
-            <input type="text" id="numero-acta" maxlength="11" readonly required>
+            <label for="numero-acta">Nº acta interno</label>
+            <input type="text" id="numero-acta" value="Se genera automáticamente" readonly disabled>
           </div>
           <div class="campo campo-full" id="tipo-novedad-bloque">
             <label>Tipo de novedad *</label>
@@ -864,7 +861,6 @@ function renderEvidenciasPreview() {
 function validarFormulario() {
   document.querySelectorAll('.invalido').forEach((el) => el.classList.remove('invalido'));
   const requeridos = [
-    'numero-acta',
     'ent-nombre', 'ent-cedula', 'ent-cargo', 'ent-depto', 'ent-un', 'ent-ubicacion',
     'rec-nombre', 'rec-cedula', 'rec-cargo', 'rec-depto', 'rec-un', 'rec-ubicacion',
   ];
@@ -879,12 +875,6 @@ function validarFormulario() {
   if (!getTipoNovedad()) {
     document.getElementById('tipo-novedad-bloque')?.classList.add('invalido');
     toast('Selecciona un tipo de novedad.', 'error');
-    ok = false;
-  }
-  const numero = get('numero-acta');
-  if (!RE_ACTA.test(numero)) {
-    marcarInvalido(document.getElementById('numero-acta'));
-    toast('El Nº de acta interno aún no está asignado. Recarga el formulario.', 'error');
     ok = false;
   }
   const listaActivos = activosParaPdf();
@@ -907,7 +897,7 @@ function recopilarValores() {
   return {
     fechaNovedad: get('fecha-novedad'),
     tipoNovedad: getTipoNovedad(),
-    numeroActa: get('numero-acta'),
+    numeroActa: '',
     nombreTecnico: usuarioActual.nombreCompleto || '',
     cedulaTecnico: usuarioActual.cedula || '',
     entregado: {
@@ -1111,19 +1101,12 @@ function registrarEventosFormulario() {
   cargarSiguienteNumeroActa();
 }
 
-async function cargarSiguienteNumeroActa() {
+function cargarSiguienteNumeroActa() {
   const input = document.getElementById('numero-acta');
   if (!input) return;
-  try {
-    const headers = {};
-    if (tokenGuardado) headers.Authorization = `Bearer ${tokenGuardado}`;
-    const res = await fetch('/api/actas/siguiente-numero', { headers });
-    if (!res.ok) throw new Error(`Error ${res.status}`);
-    const data = await res.json();
-    if (data.numeroActa) input.value = data.numeroActa;
-  } catch {
-    toast('No se pudo obtener el consecutivo de acta.', 'advertencia');
-  }
+  input.value = 'Se genera automáticamente';
+  input.readOnly = true;
+  input.disabled = true;
 }
 
 function registrarSidebar() {

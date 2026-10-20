@@ -124,6 +124,14 @@
 .sidebar__btn[hidden] {
   display: none !important;
 }
+#btn-usuarios,
+#btn-reportes {
+  display: none;
+}
+html.rol-admin #btn-usuarios,
+html.rol-admin #btn-reportes {
+  display: flex;
+}
 .sidebar__btn:hover {
   background: rgba(255,255,255,0.24);
 }

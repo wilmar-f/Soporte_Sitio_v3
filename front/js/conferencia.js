@@ -63,10 +63,8 @@ function renderInfoUsuario() {
   const avatarEl = document.getElementById('user-avatar');
   avatarEl.textContent = (nombre || 'U').charAt(0).toUpperCase();
 
-  const esAdmin = esRolAdministrador(usuarioActual.rol);
-  setSidebarBtnVisible(document.getElementById('btn-usuarios'), esAdmin);
-  setSidebarBtnVisible(document.getElementById('btn-reportes'), esAdmin);
-}
+  document.documentElement.classList.toggle('rol-admin', esRolAdministrador(usuarioActual.rol));
+
 
 function setSidebarBtnVisible(btn, visible) {
   if (!btn) return;

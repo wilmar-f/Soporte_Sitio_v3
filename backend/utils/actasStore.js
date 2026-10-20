@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { getDataDir } = require('./dataPaths');
+const { getPool } = require('./pgPool');
 const {
   inRango,
   matchesTecnico,
@@ -65,6 +66,71 @@ function peekSiguienteNumero() {
   return formatNumero(year, maxConsecutivo(readAll(), year) + 1);
 }
 
+async function ensureActasTable(pool) {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS actas (
+      id UUID PRIMARY KEY,
+      numero_acta TEXT NOT NULL UNIQUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      fecha_novedad TEXT NOT NULL DEFAULT '',
+      tipo_novedad TEXT NOT NULL DEFAULT '',
+      nombre_tecnico TEXT NOT NULL DEFAULT '',
+      cedula_tecnico TEXT NOT NULL DEFAULT '',
+      unidad_negocio TEXT NOT NULL DEFAULT '',
+      entregado JSONB NOT NULL DEFAULT '{}'::jsonb,
+      recibido JSONB NOT NULL DEFAULT '{}'::jsonb,
+      activos JSONB NOT NULL DEFAULT '[]'::jsonb
+    )
+  `);
+}
+
+async function maxConsecutivoPg(pool, year) {
+  const { rows } = await pool.query(
+    `SELECT numero_acta FROM actas WHERE numero_acta LIKE $1`,
+    [`${year}-______`]
+  );
+  return maxConsecutivo(rows.map((r) => ({ numeroActa: r.numero_acta })), year);
+}
+
+async function insertActaPg(entry) {
+  const pool = getPool();
+  await ensureActasTable(pool);
+  const year = anioBogota();
+  let n = Math.max(maxConsecutivo(readAll(), year), await maxConsecutivoPg(pool, year)) + 1;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const numeroActa = formatNumero(year, n);
+    try {
+      await pool.query(
+        `INSERT INTO actas (
+          id, numero_acta, created_at, fecha_novedad, tipo_novedad,
+          nombre_tecnico, cedula_tecnico, unidad_negocio, entregado, recibido, activos
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10::jsonb,$11::jsonb)`,
+        [
+          entry.id,
+          numeroActa,
+          entry.createdAt,
+          entry.fechaNovedad,
+          entry.tipoNovedad,
+          entry.nombreTecnico,
+          entry.cedulaTecnico,
+          entry.unidadNegocio,
+          JSON.stringify(entry.entregado || {}),
+          JSON.stringify(entry.recibido || {}),
+          JSON.stringify(entry.activos || []),
+        ]
+      );
+      return numeroActa;
+    } catch (err) {
+      if (err.code === '23505') {
+        n += 1;
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error('No se pudo asignar el Nº de acta interno.');
+}
+
 function extractAnio(fecha) {
   const match = String(fecha ?? '').match(/^(\d{4})/);
   if (match) return parseInt(match[1], 10);
@@ -98,10 +164,8 @@ function personaTxt(p) {
     .join(' ');
 }
 
-function appendActa(record) {
+async function appendActa(record) {
   const records = readAll();
-  const year = anioBogota();
-  const numeroActa = formatNumero(year, maxConsecutivo(records, year) + 1);
   const activos = Array.isArray(record.activos)
     ? record.activos.map((a) => ({
       tipo: String(a.tipo ?? '').trim(),
@@ -114,7 +178,7 @@ function appendActa(record) {
   const entry = {
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
-    numeroActa,
+    numeroActa: '',
     fechaNovedad: String(record.fechaNovedad ?? '').trim(),
     tipoNovedad: String(record.tipoNovedad ?? '').trim(),
     nombreTecnico: String(record.nombreTecnico ?? '').trim(),
@@ -126,6 +190,7 @@ function appendActa(record) {
     ).trim(),
     activos,
   };
+  entry.numeroActa = await insertActaPg(entry);
   records.push(entry);
   writeAll(records);
   return entry;

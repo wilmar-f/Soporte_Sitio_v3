@@ -304,9 +304,7 @@ function renderInfoUsuario() {
   const avatarEl = document.getElementById('user-avatar');
   avatarEl.textContent = (nombreCompleto || 'U').charAt(0).toUpperCase();
 
-  const btnUsuarios = document.getElementById('btn-usuarios');
-  setSidebarBtnVisible(btnUsuarios, esAdministrador());
-  setSidebarBtnVisible(document.getElementById('btn-reportes'), esAdministrador());
+  document.documentElement.classList.toggle('rol-admin', esAdministrador());
 }
 
 /* ── Carga datos maestros al iniciar ───────────────── */

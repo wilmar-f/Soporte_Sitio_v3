@@ -69,7 +69,7 @@ exports.generarPdfActa = async (req, res) => {
       return res.status(400).json({ error: 'Debe haber al menos un activo con tipo, marca, modelo, serie y etiqueta.' });
     }
 
-    const guardada = appendActa({
+    const guardada = await appendActa({
       fechaNovedad,
       tipoNovedad: tipoNorm,
       nombreTecnico: txt(body.nombreTecnico) || txt(req.user?.nombreCompleto),

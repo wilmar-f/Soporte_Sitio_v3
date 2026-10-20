@@ -1,3 +1,10 @@
+#numero-acta:disabled,
+#numero-acta[readonly] {
+  background: #F1F3FA;
+  color: #6B7194;
+  cursor: not-allowed;
+}
+
 .actas-activo-acciones {
   display: flex;
   flex-wrap: wrap;

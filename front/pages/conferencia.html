@@ -24,13 +24,14 @@
         <p class="sidebar__ultimo-acceso" id="user-ultimo-acceso"></p>
         <span class="sidebar__rol" id="user-rol">—</span>
       </div>
+      <script src="../js/sidebar-rol.js"></script>
 
       <nav class="sidebar__nav" aria-label="Menú principal">
-        <button class="sidebar__btn" id="btn-usuarios" hidden>
+        <button type="button" class="sidebar__btn" id="btn-usuarios">
           <span class="sidebar__btn-icono">👥</span>
           Usuarios
         </button>
-        <button type="button" class="sidebar__btn" id="btn-reportes" hidden>
+        <button type="button" class="sidebar__btn" id="btn-reportes">
           <span class="sidebar__btn-icono">📊</span>
           Reportes
         </button>
@@ -49,6 +50,10 @@
         <button class="sidebar__btn sidebar__btn--activo" id="btn-videoconferencia">
           <span class="sidebar__btn-icono">📷</span>
           VideoConferencia
+        </button>
+        <button type="button" class="sidebar__btn sidebar__btn--secundario" id="btn-cambiar-clave">
+          <span class="sidebar__btn-icono">🔑</span>
+          Cambiar contraseña
         </button>
         <button class="sidebar__btn sidebar__btn--peligro" id="btn-cerrar-sesion">
           <span class="sidebar__btn-icono">🚪</span>
