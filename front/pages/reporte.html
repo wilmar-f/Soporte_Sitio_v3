@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes — Diagnóstico</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="reporte.css">
+  <link rel="stylesheet" href="../css/layout.css">
+</head>
+<body data-page="reportes">
+  <div id="toast-container"></div>
+
+  <main class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__marca">
+        <img class="sidebar__logo" src="../assets/logo/Logo-Teknologia.jpg" alt="">
+      </div>
+      <div class="sidebar__perfil">
+        <div class="sidebar__avatar" id="user-avatar" aria-hidden="true"></div>
+        <p class="sidebar__bienvenida">Bienvenido,</p>
+        <p class="sidebar__nombre" id="user-nombre">—</p>
+        <p class="sidebar__correo" id="user-correo">—</p>
+        <p class="sidebar__ultimo-acceso" id="user-ultimo-acceso"></p>
+        <span class="sidebar__rol" id="user-rol">—</span>
+      </div>
+      <nav class="sidebar__nav" aria-label="Menú principal">
+        <a href="/pages/reporte.html" class="sidebar__btn" id="btn-reportes">
+          <span class="sidebar__btn-icono">📊</span>
+          Reportes
+        </a>
+        <a href="/pages/usuario.html" class="sidebar__btn" id="btn-usuarios">
+          <span class="sidebar__btn-icono">👥</span>
+          Usuarios
+        </a>
+        <a href="/pages/diagnostico-ia.html" class="sidebar__btn" id="btn-diagnostico-beta">
+          <span class="sidebar__btn-icono">📋</span>
+          Diagnóstico IA
+        </a>
+        <a href="/pages/diagnostico.html" class="sidebar__btn" id="btn-diagnostico">
+          <span class="sidebar__btn-icono">📋</span>
+          Diagnóstico
+        </a>
+        <a href="/pages/acta.html" class="sidebar__btn" id="btn-actas">
+          <span class="sidebar__btn-icono">📄</span>
+          Actas Activos
+        </a>
+        <a href="/pages/conferencia.html" class="sidebar__btn" id="btn-videoconferencia">
+          <span class="sidebar__btn-icono">📷</span>
+          VideoConferencia
+        </a>
+        <button type="button" class="sidebar__btn sidebar__btn--secundario" id="btn-cambiar-clave">
+          <span class="sidebar__btn-icono">🔑</span>
+          Cambiar contraseña
+        </button>
+        <button type="button" class="sidebar__btn sidebar__btn--peligro" id="btn-cerrar-sesion">
+          <span class="sidebar__btn-icono">🚪</span>
+          Cerrar Sesión
+        </button>
+      </nav>
+      <script src="../js/shared/session.js"></script>
+      <script src="../js/shared/sidebar.js"></script>
+    </aside>
+
+    <section class="panel-principal" id="panel-principal" aria-live="polite">
+      <div class="panel-carga" aria-hidden="true"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Sistema de Diagnóstico Web - Soporte en Sitio — Todos los derechos reservados</p>
+  </footer>
+
+  <script type="module" src="../js/reporte.js"></script>
+</body>
+</html>

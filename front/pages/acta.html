@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Actas — Diagnóstico</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="usuario.module.css">
+  <link rel="stylesheet" href="actas.module.css">
+  <link rel="stylesheet" href="../css/layout.css">
+</head>
+<body data-page="acta">
+  <div id="toast-container"></div>
+
+  <main class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__marca">
+        <img class="sidebar__logo" src="../assets/logo/Logo-Teknologia.jpg" alt="">
+      </div>
+      <div class="sidebar__perfil">
+        <div class="sidebar__avatar" id="user-avatar" aria-hidden="true"></div>
+        <p class="sidebar__bienvenida">Bienvenido,</p>
+        <p class="sidebar__nombre" id="user-nombre">—</p>
+        <p class="sidebar__correo" id="user-correo">—</p>
+        <p class="sidebar__ultimo-acceso" id="user-ultimo-acceso"></p>
+        <span class="sidebar__rol" id="user-rol">—</span>
+      </div>
+      <nav class="sidebar__nav" aria-label="Menú principal">
+        <a href="/pages/reporte.html" class="sidebar__btn" id="btn-reportes">
+          <span class="sidebar__btn-icono">📊</span>
+          Reportes
+        </a>
+        <a href="/pages/usuario.html" class="sidebar__btn" id="btn-usuarios">
+          <span class="sidebar__btn-icono">👥</span>
+          Usuarios
+        </a>
+        <a href="/pages/diagnostico-ia.html" class="sidebar__btn" id="btn-diagnostico-beta">
+          <span class="sidebar__btn-icono">📋</span>
+          Diagnóstico IA
+        </a>
+        <a href="/pages/diagnostico.html" class="sidebar__btn" id="btn-diagnostico">
+          <span class="sidebar__btn-icono">📋</span>
+          Diagnóstico
+        </a>
+        <a href="/pages/acta.html" class="sidebar__btn" id="btn-actas">
+          <span class="sidebar__btn-icono">📄</span>
+          Actas Activos
+        </a>
+        <a href="/pages/conferencia.html" class="sidebar__btn" id="btn-videoconferencia">
+          <span class="sidebar__btn-icono">📷</span>
+          VideoConferencia
+        </a>
+        <button type="button" class="sidebar__btn sidebar__btn--secundario" id="btn-cambiar-clave">
+          <span class="sidebar__btn-icono">🔑</span>
+          Cambiar contraseña
+        </button>
+        <button type="button" class="sidebar__btn sidebar__btn--peligro" id="btn-cerrar-sesion">
+          <span class="sidebar__btn-icono">🚪</span>
+          Cerrar Sesión
+        </button>
+      </nav>
+      <script src="../js/shared/session.js"></script>
+      <script src="../js/shared/sidebar.js"></script>
+    </aside>
+
+    <section class="panel-principal" id="panel-principal" aria-live="polite">
+      <form id="form-acta" class="formulario-diagnostico" novalidate>
+        <h2>Acta de novedades — Activos HW &amp; SW</h2>
+
+        <fieldset class="seccion">
+          <legend>Encabezado</legend>
+          <div class="campos-grid">
+            <div class="campo">
+              <label for="fecha-novedad">Fecha novedad *</label>
+              <input type="date" id="fecha-novedad" readonly required>
+            </div>
+            <div class="campo">
+              <label for="numero-acta">Nº acta interno</label>
+              <input type="text" id="numero-acta" value="Se genera automáticamente" readonly disabled>
+            </div>
+            <div class="campo campo-full" id="tipo-novedad-bloque">
+              <label>Tipo de novedad *</label>
+              <div class="actas-radios">
+                <label class="actas-radio"><input type="radio" name="tipo-novedad" value="CALIDAD PRESTAMO" required><span>CALIDAD PRESTAMO</span></label>
+                <label class="actas-radio"><input type="radio" name="tipo-novedad" value="INGRESO DE ALTA" required><span>INGRESO DE ALTA</span></label>
+                <label class="actas-radio"><input type="radio" name="tipo-novedad" value="TRASLADO REUBICACIÓN" required><span>TRASLADO REUBICACIÓN</span></label>
+                <label class="actas-radio"><input type="radio" name="tipo-novedad" value="MODIFICACIÓN ADICIÓN" required><span>MODIFICACIÓN ADICIÓN</span></label>
+                <label class="actas-radio"><input type="radio" name="tipo-novedad" value="RETIRO DE BAJA" required><span>RETIRO DE BAJA</span></label>
+                <label class="actas-radio"><input type="radio" name="tipo-novedad" value="VENTA" required><span>VENTA</span></label>
+                <label class="actas-radio"><input type="radio" name="tipo-novedad" value="DESTRUCCIÓN" required><span>DESTRUCCIÓN</span></label>
+                <label class="actas-radio"><input type="radio" name="tipo-novedad" value="HURTO" required><span>HURTO</span></label>
+                <label class="actas-radio"><input type="radio" name="tipo-novedad" value="SINIESTRO" required><span>SINIESTRO</span></label>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="seccion">
+          <legend>Entregado o realizado por</legend>
+          <div class="campos-grid">
+            <div class="campo"><label for="ent-cedula">Cédula *</label><input type="text" id="ent-cedula" required></div>
+            <div class="campo"><label for="ent-nombre">Nombre *</label><input type="text" id="ent-nombre" placeholder="Se autocompleta por cedula" readonly required></div>
+            <div class="campo"><label for="ent-cargo">Cargo *</label><input type="text" id="ent-cargo" placeholder="Se autocompleta por cedula" readonly required></div>
+            <div class="campo"><label for="ent-depto">Departamento *</label><input type="text" id="ent-depto" placeholder="Se autocompleta por cedula" readonly required></div>
+            <div class="campo"><label for="ent-un">Unidad de negocio *</label><input type="text" id="ent-un" placeholder="Se autocompleta por cedula" readonly required></div>
+            <div class="campo"><label for="ent-ubicacion">Ubicación física *</label><input type="text" id="ent-ubicacion" placeholder="Se autocompleta por cedula" readonly required></div>
+          </div>
+        </fieldset>
+
+        <fieldset class="seccion">
+          <legend>Recibido por</legend>
+          <div class="campos-grid">
+            <div class="campo"><label for="rec-cedula">Cédula *</label><input type="text" id="rec-cedula" required></div>
+            <div class="campo"><label for="rec-nombre">Nombre *</label><input type="text" id="rec-nombre" placeholder="Se autocompleta por cedula" readonly required></div>
+            <div class="campo"><label for="rec-cargo">Cargo *</label><input type="text" id="rec-cargo" placeholder="Se autocompleta por cedula" readonly required></div>
+            <div class="campo"><label for="rec-depto">Departamento *</label><input type="text" id="rec-depto" placeholder="Se autocompleta por cedula" readonly required></div>
+            <div class="campo"><label for="rec-un">Unidad de negocio *</label><input type="text" id="rec-un" placeholder="Se autocompleta por cedula" readonly required></div>
+            <div class="campo"><label for="rec-ubicacion">Ubicación *</label><input type="text" id="rec-ubicacion" placeholder="Se autocompleta por cedula" readonly required></div>
+            <div class="campo"><label for="ubicacion-contable">Ubicación contable (nómina)</label><input type="text" id="ubicacion-contable"></div>
+            <div class="campo"><label for="usuario-red">Usuario de red</label><input type="text" id="usuario-red"></div>
+          </div>
+        </fieldset>
+
+        <fieldset class="seccion">
+          <legend>Datos del activo</legend>
+          <div class="campos-grid">
+            <div class="campo campo-full campo-busqueda-equipo">
+              <label for="act-busqueda-equipo">Buscar activo *</label>
+              <div class="campo-busqueda-equipo__fila">
+                <input type="text" id="act-busqueda-equipo" placeholder="Serial o etiqueta" autocomplete="off">
+                <button type="button" class="btn btn--primario" id="btn-buscar-activo">Buscar</button>
+                <button type="button" class="btn btn--outline" id="btn-borrar-activo">Borrar</button>
+              </div>
+            </div>
+            <div class="campo">
+              <label for="act-tipo">Tipo de equipo *</label>
+              <select id="act-tipo" required>
+                <option value="">Selecciona…</option>
+                <option value="DESKTOP">DESKTOP</option>
+                <option value="ESCANER">ESCANER</option>
+                <option value="ESCANER BALANZA">ESCANER BALANZA</option>
+                <option value="IMPRESORA LASER">IMPRESORA LASER</option>
+                <option value="IMPRESORA TERMICA">IMPRESORA TERMICA</option>
+                <option value="LAPTOP">LAPTOP</option>
+                <option value="LECTOR CODIGOS">LECTOR CODIGOS</option>
+                <option value="PDA">PDA</option>
+                <option value="SUREPOS">SUREPOS</option>
+                <option value="TABLET">TABLET</option>
+                <option value="VERIFICADOR PRECIOS">VERIFICADOR PRECIOS</option>
+              </select>
+            </div>
+            <div class="campo"><label for="act-serie">Serie *</label><input type="text" id="act-serie" placeholder="Se autocompleta por serial" readonly required></div>
+            <div class="campo"><label for="act-marca">Marca *</label><input type="text" id="act-marca" placeholder="Se autocompleta por serial" readonly required></div>
+            <div class="campo"><label for="act-modelo">Modelo *</label><input type="text" id="act-modelo" placeholder="Se autocompleta por serial" readonly required></div>
+            <div class="campo"><label for="act-etiqueta">Nº etiqueta *</label><input type="text" id="act-etiqueta" placeholder="Se autocompleta por serial" readonly required></div>
+            <div class="campo"><label for="act-otros">Otros (IP / # puertos / etc.)</label><input type="text" id="act-otros"></div>
+            <div class="campo campo-full"><label for="act-software">Relación de software fuera del inventario</label><input type="text" id="act-software"></div>
+          </div>
+          <div class="actas-activo-acciones">
+            <button type="button" class="btn btn--outline" id="btn-agregar-activo">Agregar otro</button>
+            <label class="btn btn--outline actas-btn-archivo" for="activos-txt-input">Cargar desde archivo</label>
+            <input type="file" id="activos-txt-input" accept=".txt,.csv,text/plain,text/csv" hidden>
+          </div>
+          <p class="evidencias-ayuda">Archivo .txt o .csv UTF-8, una línea por activo: <code>tipo;serie</code> o <code>tipo,serie</code> (opcional cabecera). Marca, modelo y etiqueta salen del inventario.</p>
+          <div class="actas-preview" id="activos-preview"></div>
+          <div class="actas-txt-errores" id="activos-txt-errores" hidden></div>
+        </fieldset>
+
+        <fieldset class="seccion">
+          <legend>Estado / observaciones (opcional)</legend>
+          <div class="campo campo-full">
+            <label for="config-hw">Configuración del hardware</label>
+            <textarea id="config-hw" rows="3"></textarea>
+          </div>
+          <div class="campo campo-full">
+            <label for="modificaciones">Relación de modificaciones, actualizaciones y/o adiciones</label>
+            <textarea id="modificaciones" rows="3"></textarea>
+          </div>
+          <div class="campo campo-full">
+            <label for="observaciones">Observaciones</label>
+            <textarea id="observaciones" rows="3"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset class="seccion">
+          <legend>Evidencias (opcional)</legend>
+          <div class="campo campo-full">
+            <label for="evidencias-input">Adjuntar imágenes (máx. 3)</label>
+            <input type="file" id="evidencias-input" accept="image/*" multiple>
+            <p class="evidencias-ayuda">Se redimensionan a 400px y aparecen en una página adicional del PDF.</p>
+            <div class="evidencias-preview" id="evidencias-preview"></div>
+          </div>
+        </fieldset>
+
+        <fieldset class="seccion">
+          <legend>Firmas</legend>
+          <p class="evidencias-ayuda">Nombre, cédula y cargo se toman de la primera sección.</p>
+          <div class="campos-grid">
+            <div class="campo"><label>Entrega — nombre</label><input type="text" id="fir-ent-nombre" readonly></div>
+            <div class="campo"><label>Entrega — cédula</label><input type="text" id="fir-ent-cedula" readonly></div>
+            <div class="campo"><label>Entrega — cargo</label><input type="text" id="fir-ent-cargo" readonly></div>
+          </div>
+          <div class="campo campo-full" id="firma-bloque-entrega">
+            <label>Firma de quien entrega <small style="font-weight:400;text-transform:none;">(opcional: dibuja, carga imagen o firma a mano en el PDF)</small></label>
+            <div class="firma-tabs">
+              <button type="button" class="firma-tab firma-tab--activo" data-firma="entrega" data-modo="dibujar">Dibujar firma</button>
+              <button type="button" class="firma-tab" data-firma="entrega" data-modo="cargar">Cargar imagen</button>
+            </div>
+            <div class="firma-panel" id="panel-dibujar-entrega">
+              <canvas id="firma-canvas-entrega" width="400" height="110" style="border:1.5px solid var(--color-gris-borde);border-radius:4px;background:#fff;cursor:crosshair;touch-action:none;display:block;"></canvas>
+              <button type="button" class="btn btn--outline" data-limpiar-canvas="entrega" style="margin-top:6px;padding:5px 12px;font-size:12px;">Limpiar</button>
+            </div>
+            <div class="firma-panel" id="panel-cargar-entrega" style="display:none;">
+              <input type="file" id="firma-archivo-entrega" accept="image/*">
+              <img id="firma-preview-entrega" class="firma-preview-img" src="" alt="Vista previa">
+            </div>
+          </div>
+          <div class="campos-grid" style="margin-top:18px">
+            <div class="campo"><label>Recibe — nombre</label><input type="text" id="fir-rec-nombre" readonly></div>
+            <div class="campo"><label>Recibe — cédula</label><input type="text" id="fir-rec-cedula" readonly></div>
+            <div class="campo"><label>Recibe — cargo</label><input type="text" id="fir-rec-cargo" readonly></div>
+          </div>
+          <div class="campo campo-full" id="firma-bloque-recibe">
+            <label>Firma de quien recibe <small style="font-weight:400;text-transform:none;">(opcional: dibuja, carga imagen o firma a mano en el PDF)</small></label>
+            <div class="firma-tabs">
+              <button type="button" class="firma-tab firma-tab--activo" data-firma="recibe" data-modo="dibujar">Dibujar firma</button>
+              <button type="button" class="firma-tab" data-firma="recibe" data-modo="cargar">Cargar imagen</button>
+            </div>
+            <div class="firma-panel" id="panel-dibujar-recibe">
+              <canvas id="firma-canvas-recibe" width="400" height="110" style="border:1.5px solid var(--color-gris-borde);border-radius:4px;background:#fff;cursor:crosshair;touch-action:none;display:block;"></canvas>
+              <button type="button" class="btn btn--outline" data-limpiar-canvas="recibe" style="margin-top:6px;padding:5px 12px;font-size:12px;">Limpiar</button>
+            </div>
+            <div class="firma-panel" id="panel-cargar-recibe" style="display:none;">
+              <input type="file" id="firma-archivo-recibe" accept="image/*">
+              <img id="firma-preview-recibe" class="firma-preview-img" src="" alt="Vista previa">
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="formulario-diagnostico__footer">
+          <button type="submit" class="btn btn--primario" id="btn-generar-acta">Generar PDF</button>
+          <button type="button" class="btn btn--outline" id="btn-limpiar-acta">Limpiar formulario</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Sistema de Diagnóstico Web - Soporte en Sitio — Todos los derechos reservados</p>
+  </footer>
+
+  <script type="module" src="../js/actas.js"></script>
+</body>
+</html>

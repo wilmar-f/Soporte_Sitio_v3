@@ -26,11 +26,11 @@
 
   function enlazarMenu() {
     const rutas = {
-      'btn-usuarios': '/pages/usuario.html?panel=usuarios',
-      'btn-reportes': '/pages/usuario.html?panel=reportes',
-      'btn-diagnostico': '/pages/usuario.html?panel=diagnostico',
-      'btn-diagnostico-beta': '/pages/usuario.html?panel=diagnostico-beta',
-      'btn-actas': '/pages/actas.html',
+      'btn-usuarios': '/pages/usuario.html',
+      'btn-reportes': '/pages/reporte.html',
+      'btn-diagnostico': '/pages/diagnostico.html',
+      'btn-diagnostico-beta': '/pages/diagnostico-ia.html',
+      'btn-actas': '/pages/acta.html',
       'btn-videoconferencia': '/pages/conferencia.html',
     };
     Object.keys(rutas).forEach((id) => {

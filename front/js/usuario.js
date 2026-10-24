@@ -12,7 +12,6 @@ import { toast }             from './toast.js';
 import {
   resolverSesion,
   leer as leerSesion,
-  cerrar as cerrarSesionStorage,
   escucharCierreEnOtrasPestanas,
   iniciarVigilanciaInactividad,
 } from './sesion.js';
@@ -22,9 +21,6 @@ import {
   validarDiagnosticoInteractivo,
   resetDiagnosticoInteractivo,
 } from './diagnostico-logica.js';
-import { formatearUltimoAcceso } from './ultimo-acceso.js';
-import { esRolAdministrador, renderPanelNoticias } from './noticias.js';
-import { renderPanelUsuarios } from './admin-usuarios.js';
 import { initCambiarClave } from './cambiar-clave.js';
 
 const MAX_EVIDENCIAS = 3;
@@ -69,8 +65,8 @@ let usuarioActual = usuarioDesdeSesion({
   usuario: usuarioGuardado,
 });
 
-function esAdministrador() {
-  return esRolAdministrador(usuarioActual.rol);
+function paginaDiagnostico() {
+  return document.body.dataset.page || '';
 }
 
 function setSidebarBtnVisible(btn, visible) {
@@ -256,12 +252,10 @@ let modoFormulario = 'clasico';
 /* ══════════════════════════════════════════════════════
    4. INICIALIZACIÓN
    ══════════════════════════════════════════════════════ */
-renderBanner();
-renderInfoUsuario();
-inventarioListo = cargarDatosIniciales();
-registrarEventosSidebar();
-initCambiarClave(() => tokenGuardado);
-abrirPanelDesdeQuery();
+function mostrarErrorCarga() {
+  const panel = document.getElementById('panel-principal');
+  if (panel) panel.innerHTML = '<p class="panel-error">No se pudo cargar esta pantalla.</p>';
+}
 
 /* ── Renderiza datos del usuario en el sidebar ─────── */
 function toTitleCase(str) {
@@ -278,33 +272,8 @@ function obtenerCargoUsuario() {
   return usuarioActual.cargo || usuarioActual.rol || '';
 }
 
-function renderUltimoAccesoSidebar() {
-  const el = document.getElementById('user-ultimo-acceso');
-  if (!el) return;
-
-  const anterior = sessionStorage.getItem('ultimoAccesoAnterior');
-  if (!anterior) {
-    el.textContent = 'Primer ingreso en este equipo';
-    return;
-  }
-
-  const fmt = formatearUltimoAcceso(anterior);
-  el.textContent = fmt ? `Último acceso: ${fmt}` : '';
-}
-
 function renderInfoUsuario() {
-  const { nombreCompleto, correo } = usuarioActual;
-  const cargo = toTitleCase(obtenerCargoUsuario());
-
-  document.getElementById('user-nombre').textContent = nombreCompleto || '—';
-  document.getElementById('user-correo').textContent = correo || usuarioActual.cedula || '—';
-  document.getElementById('user-rol').textContent    = cargo || '—';
-  renderUltimoAccesoSidebar();
-
-  const avatarEl = document.getElementById('user-avatar');
-  avatarEl.textContent = (nombreCompleto || 'U').charAt(0).toUpperCase();
-
-  document.documentElement.classList.toggle('rol-admin', esAdministrador());
+  /* Perfil y último acceso: js/shared/sidebar.js */
 }
 
 /* ── Carga datos maestros al iniciar ───────────────── */
@@ -359,93 +328,6 @@ async function cargarDatosIniciales() {
 /* ══════════════════════════════════════════════════════
    5. EVENTOS DEL SIDEBAR
    ══════════════════════════════════════════════════════ */
-function registrarEventosSidebar() {
-  document.getElementById('btn-diagnostico').addEventListener('click', (e) => {
-    e.preventDefault();
-    activarBotonSidebar('btn-diagnostico');
-    setPanelActivo('diagnostico');
-    renderFormularioDiagnostico();
-  });
-
-  const btnDiagnosticoBeta = document.getElementById('btn-diagnostico-beta');
-  if (btnDiagnosticoBeta) {
-    btnDiagnosticoBeta.addEventListener('click', (e) => {
-      e.preventDefault();
-      activarBotonSidebar('btn-diagnostico-beta');
-      setPanelActivo('diagnostico-beta');
-      renderFormularioDiagnostico('beta');
-    });
-  }
-
-  const btnUsuarios = document.getElementById('btn-usuarios');
-  if (btnUsuarios && esAdministrador()) {
-    btnUsuarios.addEventListener('click', () => {
-      activarBotonSidebar('btn-usuarios');
-      setPanelActivo('usuarios');
-      renderPanelUsuarios(tokenGuardado);
-    });
-  }
-
-  const btnReportes = document.getElementById('btn-reportes');
-  if (btnReportes && esAdministrador()) {
-    btnReportes.addEventListener('click', () => {
-      activarBotonSidebar('btn-reportes');
-      setPanelActivo('reportes');
-      renderPanelNoticias(tokenGuardado);
-    });
-  }
-
-  const btnActas = document.getElementById('btn-actas');
-  if (btnActas) {
-    btnActas.addEventListener('click', () => {
-      window.location.href = '/pages/actas.html';
-    });
-  }
-
-  const btnVideoconferencia = document.getElementById('btn-videoconferencia');
-  if (btnVideoconferencia) {
-    btnVideoconferencia.addEventListener('click', () => {
-      window.location.href = '/pages/conferencia.html';
-    });
-  }
-
-  document.getElementById('btn-cerrar-sesion').addEventListener('click', cerrarSesion);
-}
-
-function abrirPanelDesdeQuery() {
-  const panel = new URLSearchParams(window.location.search).get('panel');
-  if (!panel) return;
-
-  history.replaceState(null, '', window.location.pathname);
-
-  if (panel === 'diagnostico') {
-    activarBotonSidebar('btn-diagnostico');
-    setPanelActivo('diagnostico');
-    renderFormularioDiagnostico();
-    return;
-  }
-
-  if (panel === 'diagnostico-beta') {
-    activarBotonSidebar('btn-diagnostico-beta');
-    setPanelActivo('diagnostico-beta');
-    renderFormularioDiagnostico('beta');
-    return;
-  }
-
-  if (panel === 'usuarios' && esAdministrador()) {
-    activarBotonSidebar('btn-usuarios');
-    setPanelActivo('usuarios');
-    renderPanelUsuarios(tokenGuardado);
-    return;
-  }
-
-  if (panel === 'reportes' && esAdministrador()) {
-    activarBotonSidebar('btn-reportes');
-    setPanelActivo('reportes');
-    renderPanelNoticias(tokenGuardado);
-  }
-}
-
 function setPanelActivo(nombre) {
   const panel = document.getElementById('panel-principal');
   if (panel) panel.dataset.panelActivo = nombre;
@@ -453,31 +335,7 @@ function setPanelActivo(nombre) {
 
 function mostrarPantallaBienvenida() {
   evidenciasAdjuntas = [];
-  modoFormulario = 'clasico';
-  const panel = document.getElementById('panel-principal');
-  if (!panel) return;
-  panel.innerHTML = `
-      <div class="panel-bienvenida" id="panel-bienvenida">
-        <div class="panel-bienvenida__icono">📋</div>
-        <h2>Panel de Diagnóstico</h2>
-        <p>Haz clic en <strong>Diagnóstico</strong> en el menú lateral para abrir el formulario.</p>
-      </div>
-  `;
-  setPanelActivo('bienvenida');
-  document.getElementById('btn-diagnostico')?.classList.remove('sidebar__btn--activo');
-  document.getElementById('btn-diagnostico-beta')?.classList.remove('sidebar__btn--activo');
-}
-
-function activarBotonSidebar(idActivo) {
-  document.querySelectorAll('.sidebar__btn:not(.sidebar__btn--peligro):not(.sidebar__btn--secundario)').forEach(btn => {
-    btn.classList.toggle('sidebar__btn--activo', btn.id === idActivo);
-  });
-}
-
-function cerrarSesion() {
-  cerrarSesionStorage();
-  toast('Su sesión ha sido cerrada con éxito.', 'exito');
-  setTimeout(() => window.location.replace('/pages/index.html'), 1400);
+  renderFormularioDiagnostico(modoFormulario === 'beta' ? 'beta' : 'clasico');
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1642,4 +1500,20 @@ function esc(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+if (sesionValida) {
+  try {
+    renderBanner();
+    inventarioListo = cargarDatosIniciales();
+    initCambiarClave(() => tokenGuardado);
+    const pagina = paginaDiagnostico();
+    if (pagina === 'diagnostico-ia') {
+      renderFormularioDiagnostico('beta');
+    } else {
+      renderFormularioDiagnostico('clasico');
+    }
+  } catch {
+    mostrarErrorCarga();
+  }
 }

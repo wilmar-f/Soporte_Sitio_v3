@@ -1,0 +1,13 @@
+/* Tokens and type live in global.css. This file adds MPA view transitions. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+}
+
+html {
+  font-family: var(--fuente);
+}

@@ -1,11 +1,8 @@
 import { renderBanner } from './banner.js';
 import { toast } from './toast.js';
-import { formatearUltimoAcceso } from './ultimo-acceso.js';
-import { esRolAdministrador } from './noticias.js';
 import { initCambiarClave } from './cambiar-clave.js';
 import {
   resolverSesion,
-  cerrar as cerrarSesionStorage,
   escucharCierreEnOtrasPestanas,
   iniciarVigilanciaInactividad,
 } from './sesion.js';
@@ -475,176 +472,46 @@ async function autocompletarPersonaPorCedula(prefijo) {
 }
 
 function renderInfoUsuario() {
-  const nombre = toTitleCase(usuarioActual.nombreCompleto || '');
-  document.getElementById('user-nombre').textContent = nombre || '—';
-  document.getElementById('user-correo').textContent = usuarioActual.correo || usuarioActual.cedula || '—';
-  document.getElementById('user-rol').textContent = toTitleCase(usuarioActual.cargo || usuarioActual.rol || '') || '—';
-  const elAcceso = document.getElementById('user-ultimo-acceso');
-  if (elAcceso) {
-    const anterior = sessionStorage.getItem('ultimoAccesoAnterior');
-    elAcceso.textContent = anterior
-      ? `Último acceso: ${formatearUltimoAcceso(anterior)}`
-      : 'Primer ingreso en este equipo';
-  }
-  document.getElementById('user-avatar').textContent = (nombre || 'U').charAt(0).toUpperCase();
-  document.documentElement.classList.toggle('rol-admin', esRolAdministrador(usuarioActual.rol));
+  /* Perfil y último acceso: js/shared/sidebar.js */
 }
 
-function mostrarBienvenida() {
-  activos = [];
-  evidenciasAdjuntas = [];
+function mostrarErrorCarga() {
   const panel = document.getElementById('panel-principal');
-  panel.innerHTML = `
-    <div class="panel-bienvenida" id="panel-bienvenida">
-      <div class="panel-bienvenida__icono">📄</div>
-      <h2>Actas de novedades</h2>
-      <p>Haz clic en <strong>Actas Activos</strong> en el menú lateral para abrir el formulario.</p>
-    </div>
-  `;
+  if (panel) panel.innerHTML = '<p class="panel-error">No se pudo cargar esta pantalla.</p>';
+}
+
+function limpiarCanvasFirmas() {
+  ['entrega', 'recibe'].forEach((id) => {
+    const canvas = document.getElementById(`firma-canvas-${id}`);
+    canvas?.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height);
+    const preview = document.getElementById(`firma-preview-${id}`);
+    if (preview) {
+      preview.src = '';
+      preview.classList.remove('visible');
+    }
+  });
 }
 
 function renderFormularioActas() {
+  const form = document.getElementById('form-acta');
+  if (!form) {
+    mostrarErrorCarga();
+    return;
+  }
   serieInventarioOk = false;
-  const panel = document.getElementById('panel-principal');
-  const radios = TIPOS_NOVEDAD.map((t) => `
-    <label class="actas-radio">
-      <input type="radio" name="tipo-novedad" value="${esc(t)}" required>
-      <span>${esc(t)}</span>
-    </label>
-  `).join('');
-  panel.innerHTML = `
-    <form id="form-acta" class="formulario-diagnostico" novalidate>
-      <h2>Acta de novedades — Activos HW &amp; SW</h2>
-
-      <fieldset class="seccion">
-        <legend>Encabezado</legend>
-        <div class="campos-grid">
-          <div class="campo">
-            <label for="fecha-novedad">Fecha novedad *</label>
-            <input type="date" id="fecha-novedad" value="${hoyISO()}" readonly required>
-          </div>
-          <div class="campo">
-            <label for="numero-acta">Nº acta interno</label>
-            <input type="text" id="numero-acta" value="Se genera automáticamente" readonly disabled>
-          </div>
-          <div class="campo campo-full" id="tipo-novedad-bloque">
-            <label>Tipo de novedad *</label>
-            <div class="actas-radios">${radios}</div>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset class="seccion">
-        <legend>Entregado o realizado por</legend>
-        <div class="campos-grid">
-          <div class="campo"><label for="ent-cedula">Cédula *</label><input type="text" id="ent-cedula" required></div>
-          <div class="campo"><label for="ent-nombre">Nombre *</label><input type="text" id="ent-nombre" placeholder="Se autocompleta por cedula" readonly required></div>
-          <div class="campo"><label for="ent-cargo">Cargo *</label><input type="text" id="ent-cargo" placeholder="Se autocompleta por cedula" readonly required></div>
-          <div class="campo"><label for="ent-depto">Departamento *</label><input type="text" id="ent-depto" placeholder="Se autocompleta por cedula" readonly required></div>
-          <div class="campo"><label for="ent-un">Unidad de negocio *</label><input type="text" id="ent-un" placeholder="Se autocompleta por cedula" readonly required></div>
-          <div class="campo"><label for="ent-ubicacion">Ubicación física *</label><input type="text" id="ent-ubicacion" placeholder="Se autocompleta por cedula" readonly required></div>
-        </div>
-      </fieldset>
-
-      <fieldset class="seccion">
-        <legend>Recibido por</legend>
-        <div class="campos-grid">
-          <div class="campo"><label for="rec-cedula">Cédula *</label><input type="text" id="rec-cedula" required></div>
-          <div class="campo"><label for="rec-nombre">Nombre *</label><input type="text" id="rec-nombre" placeholder="Se autocompleta por cedula" readonly required></div>
-          <div class="campo"><label for="rec-cargo">Cargo *</label><input type="text" id="rec-cargo" placeholder="Se autocompleta por cedula" readonly required></div>
-          <div class="campo"><label for="rec-depto">Departamento *</label><input type="text" id="rec-depto" placeholder="Se autocompleta por cedula" readonly required></div>
-          <div class="campo"><label for="rec-un">Unidad de negocio *</label><input type="text" id="rec-un" placeholder="Se autocompleta por cedula" readonly required></div>
-          <div class="campo"><label for="rec-ubicacion">Ubicación *</label><input type="text" id="rec-ubicacion" placeholder="Se autocompleta por cedula" readonly required></div>
-          <div class="campo"><label for="ubicacion-contable">Ubicación contable (nómina)</label><input type="text" id="ubicacion-contable"></div>
-          <div class="campo"><label for="usuario-red">Usuario de red</label><input type="text" id="usuario-red"></div>
-        </div>
-      </fieldset>
-
-      <fieldset class="seccion">
-        <legend>Datos del activo</legend>
-        <div class="campos-grid">
-          <div class="campo campo-full campo-busqueda-equipo">
-            <label for="act-busqueda-equipo">Buscar activo *</label>
-            <div class="campo-busqueda-equipo__fila">
-              <input type="text" id="act-busqueda-equipo" placeholder="Serial o etiqueta" autocomplete="off">
-              <button type="button" class="btn btn--primario" id="btn-buscar-activo">Buscar</button>
-              <button type="button" class="btn btn--outline" id="btn-borrar-activo">Borrar</button>
-            </div>
-          </div>
-          <div class="campo">
-            <label for="act-tipo">Tipo de equipo *</label>
-            <select id="act-tipo" required>
-              <option value="">Selecciona…</option>
-              ${TIPOS_EQUIPO.map((t) => `<option value="${esc(t)}">${esc(t)}</option>`).join('')}
-            </select>
-          </div>
-          <div class="campo"><label for="act-serie">Serie *</label><input type="text" id="act-serie" placeholder="Se autocompleta por serial" readonly required></div>
-          <div class="campo"><label for="act-marca">Marca *</label><input type="text" id="act-marca" placeholder="Se autocompleta por serial" readonly required></div>
-          <div class="campo"><label for="act-modelo">Modelo *</label><input type="text" id="act-modelo" placeholder="Se autocompleta por serial" readonly required></div>
-          <div class="campo"><label for="act-etiqueta">Nº etiqueta *</label><input type="text" id="act-etiqueta" placeholder="Se autocompleta por serial" readonly required></div>
-          <div class="campo"><label for="act-otros">Otros (IP / # puertos / etc.)</label><input type="text" id="act-otros"></div>
-          <div class="campo campo-full"><label for="act-software">Relación de software fuera del inventario</label><input type="text" id="act-software"></div>
-        </div>
-        <div class="actas-activo-acciones">
-          <button type="button" class="btn btn--outline" id="btn-agregar-activo">Agregar otro</button>
-          <label class="btn btn--outline actas-btn-archivo" for="activos-txt-input">Cargar desde archivo</label>
-          <input type="file" id="activos-txt-input" accept=".txt,.csv,text/plain,text/csv" hidden>
-        </div>
-        <p class="evidencias-ayuda">Archivo .txt o .csv UTF-8, una línea por activo: <code>tipo;serie</code> o <code>tipo,serie</code> (opcional cabecera). Marca, modelo y etiqueta salen del inventario.</p>
-        <div class="actas-preview" id="activos-preview"></div>
-        <div class="actas-txt-errores" id="activos-txt-errores" hidden></div>
-      </fieldset>
-
-      <fieldset class="seccion">
-        <legend>Estado / observaciones (opcional)</legend>
-        <div class="campo campo-full">
-          <label for="config-hw">Configuración del hardware</label>
-          <textarea id="config-hw" rows="3"></textarea>
-        </div>
-        <div class="campo campo-full">
-          <label for="modificaciones">Relación de modificaciones, actualizaciones y/o adiciones</label>
-          <textarea id="modificaciones" rows="3"></textarea>
-        </div>
-        <div class="campo campo-full">
-          <label for="observaciones">Observaciones</label>
-          <textarea id="observaciones" rows="3"></textarea>
-        </div>
-      </fieldset>
-
-      <fieldset class="seccion">
-        <legend>Evidencias (opcional)</legend>
-        <div class="campo campo-full">
-          <label for="evidencias-input">Adjuntar imágenes (máx. 3)</label>
-          <input type="file" id="evidencias-input" accept="image/*" multiple>
-          <p class="evidencias-ayuda">Se redimensionan a 400px y aparecen en una página adicional del PDF.</p>
-          <div class="evidencias-preview" id="evidencias-preview"></div>
-        </div>
-      </fieldset>
-
-      <fieldset class="seccion">
-        <legend>Firmas</legend>
-        <p class="evidencias-ayuda">Nombre, cédula y cargo se toman de la primera sección.</p>
-        <div class="campos-grid">
-          <div class="campo"><label>Entrega — nombre</label><input type="text" id="fir-ent-nombre" readonly></div>
-          <div class="campo"><label>Entrega — cédula</label><input type="text" id="fir-ent-cedula" readonly></div>
-          <div class="campo"><label>Entrega — cargo</label><input type="text" id="fir-ent-cargo" readonly></div>
-        </div>
-        ${bloqueFirma('entrega', 'Firma de quien entrega')}
-        <div class="campos-grid" style="margin-top:18px">
-          <div class="campo"><label>Recibe — nombre</label><input type="text" id="fir-rec-nombre" readonly></div>
-          <div class="campo"><label>Recibe — cédula</label><input type="text" id="fir-rec-cedula" readonly></div>
-          <div class="campo"><label>Recibe — cargo</label><input type="text" id="fir-rec-cargo" readonly></div>
-        </div>
-        ${bloqueFirma('recibe', 'Firma de quien recibe')}
-      </fieldset>
-
-      <div class="formulario-diagnostico__footer">
-        <button type="submit" class="btn btn--primario" id="btn-generar-acta">Generar PDF</button>
-        <button type="button" class="btn btn--outline" id="btn-limpiar-acta">Limpiar formulario</button>
-      </div>
-    </form>
-  `;
-  registrarEventosFormulario();
+  form.reset();
+  const fecha = document.getElementById('fecha-novedad');
+  if (fecha) fecha.value = hoyISO();
+  cargarSiguienteNumeroActa();
+  limpiarBloqueActivo();
+  limpiarCanvasFirmas();
+  renderEvidenciasPreview();
+  renderPreviewActivos();
+  document.querySelectorAll('.invalido').forEach((el) => el.classList.remove('invalido'));
+  if (form.dataset.eventos !== '1') {
+    registrarEventosFormulario();
+    form.dataset.eventos = '1';
+  }
 }
 
 function bloqueFirma(id, titulo) {
@@ -965,7 +832,9 @@ async function generarPDF() {
     a.remove();
     URL.revokeObjectURL(a.href);
     toast('PDF del acta generado y descargado correctamente.', 'exito');
-    mostrarBienvenida();
+    activos = [];
+    evidenciasAdjuntas = [];
+    renderFormularioActas();
   } catch (err) {
     toast(`Error al generar el PDF: ${err.message || 'Intenta de nuevo.'}`, 'error');
   } finally {
@@ -1111,35 +980,14 @@ function cargarSiguienteNumeroActa() {
   input.disabled = true;
 }
 
-function registrarSidebar() {
-  document.getElementById('btn-actas')?.addEventListener('click', (e) => {
-    e.preventDefault();
+if (sesionValida) {
+  try {
+    if (!document.getElementById('form-acta')) throw new Error('sin-form');
+    renderBanner();
+    initCambiarClave(() => tokenGuardado);
+    inventarioListo = recargarInventario();
     renderFormularioActas();
-  });
-  document.getElementById('btn-diagnostico')?.addEventListener('click', () => {
-    window.location.href = '/pages/usuario.html?panel=diagnostico';
-  });
-  document.getElementById('btn-diagnostico-beta')?.addEventListener('click', () => {
-    window.location.href = '/pages/usuario.html?panel=diagnostico-beta';
-  });
-  document.getElementById('btn-usuarios')?.addEventListener('click', () => {
-    window.location.href = '/pages/usuario.html?panel=usuarios';
-  });
-  document.getElementById('btn-reportes')?.addEventListener('click', () => {
-    window.location.href = '/pages/usuario.html?panel=reportes';
-  });
-  document.getElementById('btn-videoconferencia')?.addEventListener('click', () => {
-    window.location.href = '/pages/conferencia.html';
-  });
-  document.getElementById('btn-cerrar-sesion')?.addEventListener('click', () => {
-    cerrarSesionStorage();
-    toast('Su sesión ha sido cerrada con éxito.', 'exito');
-    setTimeout(() => window.location.replace('/pages/index.html'), 1400);
-  });
+  } catch {
+    mostrarErrorCarga();
+  }
 }
-
-renderBanner();
-renderInfoUsuario();
-registrarSidebar();
-initCambiarClave(() => tokenGuardado);
-inventarioListo = recargarInventario();

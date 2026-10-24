@@ -6,15 +6,24 @@ import { toast }              from './toast.js';
 import { registrarUltimoAcceso } from './ultimo-acceso.js';
 import { haySesion, guardar, resolverSesion } from './sesion.js';
 
+function destinoPorSesion(usuarioRaw) {
+  try {
+    const usuario = typeof usuarioRaw === 'string' ? JSON.parse(usuarioRaw) : usuarioRaw;
+    return window.DiagnosticoSession.destinoTrasLogin(usuario?.rol);
+  } catch {
+    return '/pages/diagnostico-ia.html';
+  }
+}
+
 // Inicializar banner
 renderBanner();
 
 if (haySesion()) {
-  window.location.replace('/pages/usuario.html');
+  window.location.replace(destinoPorSesion(sessionStorage.getItem('usuario')));
 } else {
   resolverSesion().then((s) => {
     const ok = Boolean(s.token && s.usuario);
-    if (ok) window.location.replace('/pages/usuario.html');
+    if (ok) window.location.replace(destinoPorSesion(s.usuario));
   });
 }
 
@@ -64,7 +73,7 @@ form.addEventListener('submit', async (e) => {
     toast('Acceso correcto. Redirigiendo…', 'exito');
 
     setTimeout(() => {
-      window.location.href = '/pages/usuario.html';
+      window.location.href = destinoPorSesion(data.usuario);
     }, 800);
 
   } catch (err) {

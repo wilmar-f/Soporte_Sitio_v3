@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VideoConferencia — Diagnóstico</title>
   <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="usuario.module.css">
   <link rel="stylesheet" href="conferencia.module.css">
+  <link rel="stylesheet" href="../css/layout.css">
 </head>
-<body>
+<body data-page="conferencia">
   <div id="toast-container"></div>
 
   <main class="app-layout">
@@ -25,40 +27,41 @@
         <span class="sidebar__rol" id="user-rol">—</span>
       </div>
       <nav class="sidebar__nav" aria-label="Menú principal">
-        <button type="button" class="sidebar__btn" id="btn-usuarios">
-          <span class="sidebar__btn-icono">👥</span>
-          Usuarios
-        </button>
-        <button type="button" class="sidebar__btn" id="btn-reportes">
+        <a href="/pages/reporte.html" class="sidebar__btn" id="btn-reportes">
           <span class="sidebar__btn-icono">📊</span>
           Reportes
-        </button>
-        <button type="button" class="sidebar__btn" id="btn-diagnostico-beta">
+        </a>
+        <a href="/pages/usuario.html" class="sidebar__btn" id="btn-usuarios">
+          <span class="sidebar__btn-icono">👥</span>
+          Usuarios
+        </a>
+        <a href="/pages/diagnostico-ia.html" class="sidebar__btn" id="btn-diagnostico-beta">
           <span class="sidebar__btn-icono">📋</span>
           Diagnóstico IA
-        </button>
-        <button class="sidebar__btn" id="btn-diagnostico">
+        </a>
+        <a href="/pages/diagnostico.html" class="sidebar__btn" id="btn-diagnostico">
           <span class="sidebar__btn-icono">📋</span>
           Diagnóstico
-        </button>
-        <button type="button" class="sidebar__btn" id="btn-actas">
+        </a>
+        <a href="/pages/acta.html" class="sidebar__btn" id="btn-actas">
           <span class="sidebar__btn-icono">📄</span>
           Actas Activos
-        </button>
-        <button class="sidebar__btn sidebar__btn--activo" id="btn-videoconferencia">
+        </a>
+        <a href="/pages/conferencia.html" class="sidebar__btn" id="btn-videoconferencia">
           <span class="sidebar__btn-icono">📷</span>
           VideoConferencia
-        </button>
+        </a>
         <button type="button" class="sidebar__btn sidebar__btn--secundario" id="btn-cambiar-clave">
           <span class="sidebar__btn-icono">🔑</span>
           Cambiar contraseña
         </button>
-        <button class="sidebar__btn sidebar__btn--peligro" id="btn-cerrar-sesion">
+        <button type="button" class="sidebar__btn sidebar__btn--peligro" id="btn-cerrar-sesion">
           <span class="sidebar__btn-icono">🚪</span>
           Cerrar Sesión
         </button>
       </nav>
-      <script src="../js/sidebar-rol.js"></script>
+      <script src="../js/shared/session.js"></script>
+      <script src="../js/shared/sidebar.js"></script>
     </aside>
 
     <section class="panel-principal">
@@ -127,17 +130,6 @@
     <p>&copy; 2026 Sistema de Diagnóstico Web - Soporte en Sitio — Todos los derechos reservados</p>
   </footer>
 
-  <script>
-    window.addEventListener('error', function (e) {
-      // #region agent log
-      fetch('http://127.0.0.1:7357/ingest/5bf9ea90-df63-4241-b696-03a74523a433',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'31c3e1'},body:JSON.stringify({sessionId:'31c3e1',runId:'linux-freeze',hypothesisId:'A',location:'conferencia.html:error',message:'window error',data:{err:String(e.message||''),file:String(e.filename||''),line:e.lineno||0,host:location.host},timestamp:Date.now()})}).catch(function(){});
-      // #endregion
-    });
-    window.addEventListener('unhandledrejection', function (e) {
-      // #region agent log
-      fetch('http://127.0.0.1:7357/ingest/5bf9ea90-df63-4241-b696-03a74523a433',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'31c3e1'},body:JSON.stringify({sessionId:'31c3e1',runId:'linux-freeze',hypothesisId:'A',location:'conferencia.html:unhandledrejection',message:'promise reject',data:{err:String(e.reason&&e.reason.message||e.reason||''),host:location.host},timestamp:Date.now()})}).catch(function(){});
-      // #endregion
-    });
-  </script>
   <script type="module" src="../js/conferencia.js"></script>
+</body>
 </html>
