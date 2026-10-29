@@ -263,6 +263,7 @@ async function subirFoto(reemplazar = false) {
     imagenBase64 = '';
     document.getElementById('preview-wrap').hidden = true;
     document.getElementById('preview-img').src = '';
+    window.DiagnosticoSession.irADestinoTrasExito();
   } catch {
     toast('Error de conexión al guardar la foto.', 'error');
   } finally {

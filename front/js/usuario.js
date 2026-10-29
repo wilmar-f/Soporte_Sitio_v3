@@ -333,11 +333,6 @@ function setPanelActivo(nombre) {
   if (panel) panel.dataset.panelActivo = nombre;
 }
 
-function mostrarPantallaBienvenida() {
-  evidenciasAdjuntas = [];
-  renderFormularioDiagnostico(modoFormulario === 'beta' ? 'beta' : 'clasico');
-}
-
 /* ══════════════════════════════════════════════════════
    6. FUNCIONES DE BÚSQUEDA / AUTOCOMPLETADO
    ══════════════════════════════════════════════════════ */
@@ -1480,7 +1475,7 @@ async function generarPDF() {
     URL.revokeObjectURL(url);
 
     toast('PDF generado y descargado correctamente.', 'exito');
-    mostrarPantallaBienvenida();
+    window.DiagnosticoSession.irADestinoTrasExito();
   } catch (err) {
     console.error('Error generando PDF:', err);
     toast(`Error al generar el PDF: ${err.message || 'Intenta de nuevo.'}`, 'error');

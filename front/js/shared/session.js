@@ -73,6 +73,15 @@
     return esRolAdministrador(rol) ? '/pages/reporte.html' : '/pages/diagnostico-ia.html';
   }
 
+  function irADestinoTrasExito(delayMs) {
+    var wait = typeof delayMs === 'number' ? delayMs : 500;
+    var usuario = leerUsuario();
+    var url = destinoTrasLogin(usuario && usuario.rol);
+    setTimeout(function () {
+      window.location.replace(url);
+    }, wait);
+  }
+
   function leerUsuario() {
     try {
       var raw = sessionStorage.getItem('usuario');
@@ -91,6 +100,7 @@
     congelarTextoUltimoAcceso: congelarTextoUltimoAcceso,
     registrarUltimoAcceso: registrarUltimoAcceso,
     destinoTrasLogin: destinoTrasLogin,
+    irADestinoTrasExito: irADestinoTrasExito,
     leerUsuario: leerUsuario,
     TEXTO_PRIMER_INGRESO: TEXTO_PRIMER,
   };

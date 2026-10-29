@@ -832,9 +832,7 @@ async function generarPDF() {
     a.remove();
     URL.revokeObjectURL(a.href);
     toast('PDF del acta generado y descargado correctamente.', 'exito');
-    activos = [];
-    evidenciasAdjuntas = [];
-    renderFormularioActas();
+    window.DiagnosticoSession.irADestinoTrasExito();
   } catch (err) {
     toast(`Error al generar el PDF: ${err.message || 'Intenta de nuevo.'}`, 'error');
   } finally {

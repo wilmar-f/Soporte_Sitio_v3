@@ -12,9 +12,10 @@ const outPath = path.join(__dirname, '../../docs/Informe_Tecnico_Diagnostico03.p
 const LAUNCH_ARGS = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'];
 
 async function launchBrowser() {
-  const isProd = process.env.NODE_ENV === 'production' || Boolean(process.env.RENDER);
-
-  if (isProd) {
+  try {
+    const puppeteer = require('puppeteer');
+    return puppeteer.launch({ headless: true, args: LAUNCH_ARGS });
+  } catch (_) {
     const puppeteer = require('puppeteer-core');
     const chromium = require('@sparticuz/chromium');
     chromium.setGraphicsMode = false;
@@ -25,9 +26,6 @@ async function launchBrowser() {
       headless: chromium.headless,
     });
   }
-
-  const puppeteer = require('puppeteer');
-  return puppeteer.launch({ headless: true, args: LAUNCH_ARGS });
 }
 
 async function main() {

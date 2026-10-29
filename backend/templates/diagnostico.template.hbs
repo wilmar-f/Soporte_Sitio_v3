@@ -207,6 +207,14 @@
     }
 
     .td-valor-centro {
+      text-align: center !important;
+    }
+
+    .td-valor-centro .valor-centrado {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
       text-align: center;
     }
 
@@ -403,7 +411,7 @@
   </tr>
   <tr>
     <td class="th-label th-label-procesador">Procesador Tipo y Velocidad</td>
-    <td class="td-valor td-valor-centro" colspan="2">{{procesador}}</td>
+    <td class="td-valor td-valor-centro" colspan="2"><div class="valor-centrado">{{procesador}}</div></td>
     <td class="th-label th-label-una-linea">Versión SO</td>
     <td class="td-valor" colspan="2">{{versionSO}}</td>
   </tr>
